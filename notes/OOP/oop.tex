@@ -295,17 +295,18 @@ But it's important to note that declaring if the derived class will be \texttt{p
 
 
 
-
-
-
-
-
-
 \subsection{Polymorphism}%
 \label{sub:polymorphism}
 
+\textbf{Polymorphism} is just a fancy word that means "taking many forms".
 
-
+In C++ it can be achieved in two ways:
+\begin{itemize}
+	\item \textbf{compile-time polymorphism:} This is when you overload a function. You write two (or more) functions that have the same name. This will of course generate compiler errors if you write the same function declaration and implementation. However, it works just fine if you overload different parts of the functin, such as defining each function with a different configuration of input arguments.  It decides what function to use based on the parameters you use. Check the \texttt{polymorphism\_overloading.cpp} file.
+		The big difference is just in the declaration of \texttt{PrintDate}.
+	\item \textbf{Function Overriding}: It occurs when a multiple definitions of a function have the same signature (same name and same arguments). Each time that function is called, one definition of the function will override the others, although which version gets to override may change based on context.
+		When a method is defined in both a base class and a derived class, the definition in the derived class can override the definition in the base class. 
+\end{itemize}
 
 
 
