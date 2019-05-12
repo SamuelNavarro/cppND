@@ -1,0 +1,365 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{minted}
+\usepackage{hyperref}
+
+\begin{document}
+\title{Object Oriented Programming}
+\author{Samuel Navarro}
+\date{\today}
+\maketitle
+
+\tableofcontents
+	
+
+\section{Intro to OOP}%
+\label{sec:intro_to_oop}
+
+In the Guideline, when you don't have logic in your classes, it's recommended to use public variables but when you have logic in your classes, it's recommended to stablish your variables as private and use setter or getter functions (public ones) to access them. 
+
+
+We have three access modifiers:
+
+\begin{enumerate}
+	\item public: Everybody can access it.
+	\item private: Only members of the class can access it.
+	\item protected.
+\end{enumerate}
+
+
+\section{Encapsulation and Abstraction}%
+\label{sec:encapsulation_and_abstraction}
+
+
+\subsection{Encapsulation}%
+\label{sub:encapsulation}
+
+
+
+\begin{itemize}
+	\item \textbf{Encapsulation} means that we bundle related properties together in a single class and sometimes we protect those properties from being modified accidentally or in an unauthorized manner. 
+	\item \textbf{Abstraction} means that users of our class only need to be familiar with the we provide. 
+\end{itemize}
+
+
+
+
+In one of the examples:
+ 
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+class someClass{
+	private:
+		std::string name;
+	public:
+		std::string getName() const;
+};
+
+\end{minted}
+\caption{const}
+\label{lst:const}
+\end{listing}
+
+We can mark as \texttt{const} only the getter functions. 
+
+
+One thing to note is that the C++ core guidelines specify that \href{https://github.com/isocpp/CppCoreGuidelines/blob/master/CppCoreGuidelines.md#Rh-get}{we need to avoid trivial getters and setters} so instead we just make the variables public.
+
+
+\subsubsection{C-style strings}%
+\label{ssub:c_style_strings}
+
+
+A \textbf{C-style string} is simply an array of characters that uses a null terminator. A \textbf{null terminator} is a special character \texttt{'\textbackslash0'} used to indicate the end of the string. More generically, A c-style string is called a \textbf{null-terminated string.}
+
+
+
+\textbf{Note:}
+To see more about the correct way of declaration of pointers see \href{http://www.stroustrup.com/bs_faq2.html#whitespace}{this by Stroustrup}. (TL;DR the answer is about style and emphasis).
+
+
+In the code below, we set the brand and convert this from string to c-style array.
+
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+class Car{
+	private:
+		char* brand;
+	public:
+		void setBrand(std::string brandName);
+		std::string GetBrand();
+};
+
+void Car::SetBrand(std::string brandName){
+	Car::brand = new char[brandName.length() + 1];
+
+	strcpy(Car::brand, brandName.c_str());
+}
+
+std::string Car::GetBrand(){
+	std::string result = "Brand name: ";
+	result += Car::brand;
+	return result;
+}
+
+\end{minted}
+\caption{C-Style string}
+\label{lst:ctyle string}
+\end{listing}
+
+
+
+
+The notion of encapsulation as a way of passing data and logic bundled together in a single object is at the very core of OOP. 
+
+One thing to notice is that the options that were incorrect were:
+\begin{itemize}
+	\item A requirement that data and logic be packaged separately in distinct objects.
+	\item The restriction that logic within a particular object can only operate on data stored within that same object.
+\end{itemize}
+
+But this ones were similar to what Bjarne said in the video. \textbf{Update: Bjarne just states the data has been Encapsulated inside the object that provides the interface. }
+
+
+Making class attributes private and assigning them with a setter function allows you to Invoke logic that checks whether the input data are valid before setting attributes.
+Setter functions can be written to run any series of checks on the inputs before assigning attribute values, or return an error to the user. 
+
+Again, I need to check why this two are incorrect:
+\begin{itemize}
+	\item Ensure that only class member functions have access to private class attributes.
+	\item Prevent users from changing non-public class attributes.
+\end{itemize}
+
+
+
+\subsection{Abstraction}%
+\label{sub:abstraction}
+
+\textbf{Bjarne:} \textit{"Is just getting away from the hardware and building from other things. Is like if you stack a lot of pre-built things and built another one."}
+
+You don't care about all the variables and the way the function handle the variables, you just know that you have a \texttt{SetDate} and a \texttt{GetDate} function. (Basically abstraction is just separating the logic from the call).
+
+
+The user is able to interact with the \texttt{Date} class through the \texttt{GetDate()} function. But the user does not need to know how \texttt{Date} is implemented. For example, the user does not know, or need to know, that this object internally contains three \texttt{int} variables. The user can just call the \texttt{GetDate()} method to get data. If the designer of this class ever decides to change how the data is stored internally -- using a vector of \texttt{ints} instead of three separate \texttt{ints}, for example -- the user of the \texttt{Date} class will not need to know.
+
+
+
+
+All that abstraction means is that you can modify all the logic and the implementation in your code and the users don't experience an impact in there usage by your changes in the code. 
+
+
+Abstraction is used to show only relevant information to the user and hide any irrelevant details. In this example, you'll get more practice with how to implement abstraction in your code.
+
+
+
+The \texttt{privateMethod.cpp} file is a example to show that we can also hide irrelevant \textbf{methods} from the users by making them private.
+
+\subsubsection{Static Attribute}%
+\label{ssub:static_attribute}
+
+
+
+With abstraction we can use the concept of \textbf{static members} in C++ classes. Class members can be declared using the class specifier \texttt{static} in the class attributes list. Only one copy of the static attribute is shared by all instances of \textbf{a} class in a program. When you declare an object of a class having a static member, the static member is not part of the class object.
+
+You can create as many instances of a class as you want but there's only one copy of the \texttt{static} attribute. 
+The only thing to consider is the fact that if you have another class with the same \texttt{static} attribute, this attribute is only shared with the instances of this class. That is,  static attributes exist beyond a particular instance of a class, but do not extend into conflict with other static attributes defined within other classes.
+
+
+
+
+
+\subsubsection{Static Method}%
+\label{ssub:static_method}
+
+
+In \texttt{main} function we haven't instantiated the class Abstraction. 
+
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+#include <iostream>
+
+class  Abstraction {
+private:
+    int number;
+    char character;
+public:
+    void static PrintCharAsNumber(char c);
+};
+
+
+void Abstraction::PrintCharAsNumber(char c) {
+    int result = c;
+    std::cout << result << "\n";
+}
+
+int main() {
+    char c = 'X';
+    Abstraction::PrintCharAsNumber(c);
+    // OUTPUT: 88
+}
+\end{minted}
+\caption{caption name}
+\label{lst:caption_name}
+\end{listing}
+
+
+
+
+Why? Because the method is static. So the scope is far greater than if it was just declared as \texttt{void PrintCharAsNumber(char c)}.
+
+
+
+\textbf{In the context of OOP, the concept of abstraction refers to:} the notion of hiding unnecessary detail from the user.
+
+Abstraction of unnecessary detail allows you to provide powerful functionality with much simpler looking code.
+
+\textbf{Static members are not bound to a class instance in the sense that} only one instance of a static member can exist across multiple instances of the class in which it is defined.
+
+A \texttt{static} member provide a way of tracking multiple instances of a class with a single member.
+
+\textbf{Static methods are not bound to a class instance in the sense that} they can be invoked  without actually instantiating the class.
+
+
+
+\textbf{Bjarne on Thinking about Classes Conceptually:} basically you look at your application domain. A programmer just can't be a programmer expert. What the problem is that you have to solve?. So you have to understand the world of your users, of your customers, etc. You listen to how they talk and what are the concepts they deal with. 
+
+Allow your customers to work at the level they would like to work at using their vocabulary. 
+
+What we do is we lift the language from the machine up to the humans. We set a language that fits for humans.
+
+
+
+
+\section{Inheritance and Polymorphism}%
+\label{sec:inheritance_and_polymorphism}
+
+\textbf{Inheritance} is one way that classes can relate to each other. 
+
+\textbf{Polymorphism} is a related concept that allows an interface to work with several different types. 
+
+Example: We may have a \texttt{cut} function that can work with the plant, fruit or apple class. In fact, the \texttt{cut} function may also accept another totally different types of objects, like paper. 
+
+
+\subsection{Inheritance}%
+\label{sub:inheritance}
+
+\textbf{Bjarne on inheritance:} You build on top of something else. You start more general and then more and more specialized. 
+
+
+\textbf{Inherited Access Modifiers}
+
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+// This example demonstrates the privacy levels
+// between parent and child classes
+
+class ParentClass{
+
+public:
+     int var1;
+protected:
+     int var2;
+private:
+     int var3;
+};
+
+class ChildClass_1 : public ParentClass{
+
+   // var1 is public for this class
+   // var2 is protected for this class
+   // var3 cannot be accessed from ChildClass_1
+};
+
+class ChildClass_2 : protected ParentClass{
+
+   // var1 is protected for this class
+   // var2 is protected for this class
+   // var3 cannot be accessed from ChildClass_2
+};
+
+class ChildClass_3 : private ParentClass{
+
+   // var1 is private for this class
+   // var2 is private for this class
+   // var3 cannot be accessed from ChildClass_3
+};
+\end{minted}
+\caption{Access Modifiers}
+\label{lst:access_modifiers}
+\end{listing}
+
+But it's important to note that declaring if the derived class will be \texttt{public} or \texttt{private} or \texttt{protected} is not obligatory. You can just inherit the class without stating the privacy level and you will get the same attributes as the base class.
+
+
+
+
+
+
+
+
+
+
+
+
+\subsection{Polymorphism}%
+\label{sub:polymorphism}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\section{Questions}%
+\label{sec:questions}
+
+
+I don't understand why you need to apply the scope resolution operator on attributes in the definition of methods. Example:
+
+
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+void Abstraction::ProcessAttributes() {
+    number *= 6;
+    character++;
+}
+
+// vs
+
+
+void Abstraction::ProcessAttributes(){
+	Abstraction::number *= 6;
+	Abstraction::character++;
+}
+\end{minted}
+\caption{Question Scope Resolution}
+\label{lst:question_scope_resolution}
+\end{listing}
+
+I believe the answer is in the class\_hierarchy.cpp code. The answer is that you don't want to mess up with the attributes of the other classes or you can't even change them.
+
+
+
+
+
+In the \texttt{friend\_class.cpp} I don't understand the need to first declare the \texttt{Rectangle} class, then implement the \texttt{Square} class and then implemente \texttt{Rectangle}. I've tried to implemente \texttt{Rectangle} after \texttt{Square} and it works fine.
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,14 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k+kt}{void} \PYG{n}{Abstraction}\PYG{o}{::}\PYG{n}{ProcessAttributes}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{n}{number} \PYG{o}{*=} \PYG{l+m+mi}{6}\PYG{p}{;}
+    \PYG{n}{character}\PYG{o}{++}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// vs}
+
+
+\PYG{k+kt}{void} \PYG{n}{Abstraction}\PYG{o}{::}\PYG{n}{ProcessAttributes}\PYG{p}{()\PYGZob{}}
+	\PYG{n}{Abstraction}\PYG{o}{::}\PYG{n}{number} \PYG{o}{*=} \PYG{l+m+mi}{6}\PYG{p}{;}
+	\PYG{n}{Abstraction}\PYG{o}{::}\PYG{n}{character}\PYG{o}{++}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

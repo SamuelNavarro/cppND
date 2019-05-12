@@ -1,0 +1,23 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}iostream\PYGZgt{}}
+
+\PYG{k}{class}  \PYG{n+nc}{Abstraction} \PYG{p}{\PYGZob{}}
+\PYG{k}{private}\PYG{o}{:}
+    \PYG{k+kt}{int} \PYG{n}{number}\PYG{p}{;}
+    \PYG{k+kt}{char} \PYG{n}{character}\PYG{p}{;}
+\PYG{k}{public}\PYG{o}{:}
+    \PYG{k+kt}{void} \PYG{k}{static} \PYG{n}{PrintCharAsNumber}\PYG{p}{(}\PYG{k+kt}{char} \PYG{n}{c}\PYG{p}{);}
+\PYG{p}{\PYGZcb{};}
+
+
+\PYG{k+kt}{void} \PYG{n}{Abstraction}\PYG{o}{::}\PYG{n}{PrintCharAsNumber}\PYG{p}{(}\PYG{k+kt}{char} \PYG{n}{c}\PYG{p}{)} \PYG{p}{\PYGZob{}}
+    \PYG{k+kt}{int} \PYG{n}{result} \PYG{o}{=} \PYG{n}{c}\PYG{p}{;}
+    \PYG{n}{std}\PYG{o}{::}\PYG{n}{cout} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{result} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{l+s}{\PYGZdq{}}\PYG{l+s+se}{\PYGZbs{}n}\PYG{l+s}{\PYGZdq{}}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{k+kt}{int} \PYG{n}{main}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k+kt}{char} \PYG{n}{c} \PYG{o}{=} \PYG{l+s+sc}{\PYGZsq{}X\PYGZsq{}}\PYG{p}{;}
+    \PYG{n}{Abstraction}\PYG{o}{::}\PYG{n}{PrintCharAsNumber}\PYG{p}{(}\PYG{n}{c}\PYG{p}{);}
+    \PYG{c+c1}{// OUTPUT: 88}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

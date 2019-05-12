@@ -1,0 +1,116 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{minted}
+\usepackage{hyperref}
+
+
+
+
+
+\begin{document}
+\title{Introduction to the C++ Language}
+\author{Samuel Navarro}
+\date{\today}
+\maketitle
+	A vector is a linear sequence of contiguously allocated memory. 
+	There are linked lists. 
+	Hash tables and the maps: Which are collections of data that skips order which makes them much faster to look up in them than in other data structures.
+
+
+	\begin{listing}
+	\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+		#include <iostream>
+		#include <vector>
+		using std::vector;
+		using std::cout;
+
+		int main(){
+			vector<int> v{6, 7, 8};
+			for(int i : v){
+				cout << i << "\n";
+			}
+		}
+	\end{minted}
+	\caption{caption name}
+	\label{lst:caption_name}
+	\end{listing}
+
+
+	\section{Vector}%
+	\label{sec:vector}
+	
+	In the case of vectors, we can print them with this:
+
+	\begin{listing}
+	\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+	#include <iostream>
+	#include <vector>
+	using std::cout;
+	using std::vector;
+
+	int main() {
+		// Add your code here.
+		vector<vector<int>> b {{1, 2},
+							{3, 4},
+							{5, 6}};
+
+		// Write your double loop here.
+		for(vector i : b){
+			for(int j : i){
+				cout << j << "\n";
+			}
+		}
+	}
+	\end{minted}
+	\caption{vector}
+	\label{lst:vector}
+	\end{listing}
+	The important thing here was that, in the \textit{range-based} loop, we put the type of the element we are \textit{iterating}. We could also use de keyword \texttt{auto}.
+	
+
+
+	We want to make a function which accept a \texttt{vector} of \texttt{int} as its argument and return the sum of all the \texttt{int}s in the vector. 
+
+	\begin{listing}
+	\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+	int AdditionFunction(vector<int> v){
+		int sum = 0;
+		for (int i : v){
+			sum += i;
+		}
+		return sum;
+	}
+	\end{minted}
+	\caption{Sum elements of vector}
+	\label{lst:sum_elements_of_vector}
+	\end{listing}
+
+
+
+	When we mark the elements as \texttt{const} you are declaring that you are going to just read the variable. You are not going to change it.
+	
+	
+
+
+
+	\section{Containers}%
+	\label{sec:containers}
+	
+	\textbf{From Bjarne:}
+	The most useful is the vector because most of the standard algorithms work on it. 
+	The number 2 for most people is that they want to build a look up table (a map, a dictionary) and if that's for ordinary strings, you can probably could use a \textbf{hash table}  they are called unordered maps and if they are anything else, you want a red black tree which is called a map.
+	
+	\vspace{0.1cm}
+
+	Container data structures are fantastic for storing ordered data, and classes are useful for grouping related data and functions together, but neigher of these data structures is optimal for storing associated data. 
+
+
+	\textbf{Dictionary Example}
+
+	\vspace{0.1cm}
+
+	A  \href{https://en.wikipedia.org/wiki/Hash_table}{hash table} (alternatively has map, or dictionary) is a data structure that uses \textit{key/value} pairs to store data, and provides efficient lookup and insertion of the data.
+
+
+	
+\end{document}
