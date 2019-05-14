@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{class} \PYG{n+nc}{Shape} \PYG{p}{\PYGZob{}}
+	\PYG{k}{public}\PYG{o}{:}
+		\PYG{n}{Shape}\PYG{p}{()} \PYG{p}{\PYGZob{}\PYGZcb{}}
+		\PYG{k}{virtual} \PYG{k+kt}{double} \PYG{n}{Area}\PYG{p}{()} \PYG{k}{const} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+		\PYG{k}{virtual} \PYG{k+kt}{double} \PYG{n+nf}{PerimeterLength}\PYG{p}{()} \PYG{k}{const} \PYG{o}{=} \PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{p}{\PYGZcb{};}
+\end{Verbatim}

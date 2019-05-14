@@ -292,9 +292,6 @@ But it's important to note that declaring if the derived class will be \texttt{p
 
 
 
-
-
-
 \subsection{Polymorphism}%
 \label{sub:polymorphism}
 
@@ -312,6 +309,7 @@ In C++ it can be achieved in two ways:
 
 There's one important concept called \textbf{Runtime Polymorphism} and it refers to the fact that virtual functions are binded at runtime. The \textbf{Function Overriding} could be like this:
 
+Runtime Polymorphism is accomplished by performing function overriding. This is performed using class hierarchies. Any derived class can override function members that belong to the base class.
 
 \begin{listing}[hbt!]
 \begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
@@ -361,6 +359,7 @@ That is, \textbf{Virtual Methods} are declared (and possibly defined) in a base 
 
 
 In the class Shape~\ref{lst:virtual_functions} If we delegate with instruction \texttt{= 0} we are notifying compiler that this (base) class doesn't have virtual method implementation but every other derived class is required to implement this method.
+Function overriding occurs when a derived class function calls its own definition of a method, instead of the base class's implementation. 
 
 \begin{listing}
 \begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
