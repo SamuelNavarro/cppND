@@ -13,7 +13,7 @@ class Base{
 class Derived : public Base {
 	public:
 		Derived(){}
-		virtual void print() const override{
+		virtual void print() const override {
 			std::cout << "Derived class" << std::endl;	
 		};
 		void calc(){
@@ -25,19 +25,18 @@ class Derived : public Base {
 
 int main(){
 	Base* bp = new Derived();
-	std::cout << "Derived class: (virtual) " << std::endl;
+	std::cout << "Msg from Derived class: (virtual) " << std::endl;
 	bp->print();
 
-	std::cout << "Base class: " << std::endl;
+	std::cout << "Msg from Base class: " << std::endl;
 	bp->calc();
 
 
 
 	// Another form
-	Base *base_ptr;
-	Derived derived;
-	base_ptr = &derived;
-
-	base_ptr->print();
-	base_ptr->calc();
+   /* Base *base_ptr;*/
+	//Derived derived;
+	//base_ptr = &derived;
+	//base_ptr->print();
+	/*base_ptr->calc();*/
 }
