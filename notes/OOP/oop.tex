@@ -309,7 +309,6 @@ In C++ it can be achieved in two ways:
 
 There's one important concept called \textbf{Runtime Polymorphism} and it refers to the fact that virtual functions are binded at runtime. The \textbf{Function Overriding} could be like this:
 
-Runtime Polymorphism is accomplished by performing function overriding. This is performed using class hierarchies. Any derived class can override function members that belong to the base class.
 
 \begin{listing}[hbt!]
 \begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
@@ -352,6 +351,7 @@ int main()
 \label{lst:polymorphism_overriding}
 \end{listing}
 
+Runtime Polymorphism is accomplished by performing function overriding. This is performed using class hierarchies. Any derived class can override function members that belong to the base class.
 
 We need to notice that because the \texttt{PrintVirtual} function is marked as \texttt{virtual}, when you call the function with \texttt{pointer->PrintVirtual();} the derived class gets called.
 
@@ -373,6 +373,100 @@ class Shape {
 \caption{Virtual Functions}
 \label{lst:virtual_functions}
 \end{listing}
+
+
+
+
+\subsection{Generic Programming}%
+\label{ssub:generic_programming}
+
+Generic code is the term used for code that is independent to types. It is mandatory to put the \texttt{template<>} tag just above your function to specify and mark which implementation is generic.
+
+
+\textbf{Bjarne:} you don't want to organize your classes and have hierarchy across them. What you want to say is: \textit{this algorithm works} for anything that are can be used for you algorithm. 
+
+
+Hierarchy and inheritance disappears but the ability to operate on anything that has the right interface stays. 
+
+\subsubsection{Templates}%
+\label{ssub:templates}
+
+
+
+With templates, the idea is to pass a data type as a parameter so that you don't need to write the same function code for operating on different data types. 
+
+Rather than writing and maintaining the multiple function declarations, each accepting slightly different arguments, you can write one function and \textit{pass the argument types as parameters}. At compile time, the compiler then expands the code using the types that are passed as parameters. 
+
+Example:
+
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+template <typename Type>
+	Type Sum(Type a, Type b){
+		return a+b;
+	}
+
+int main(){
+	std::cout << Sum<double>(20.0, 13.7) << std::endl;
+}
+\end{minted}
+\caption{Template}
+\label{lst:template}
+\end{listing}
+
+
+
+With the code for Templates~\ref{lst:template}, the compiler add the following internally:
+
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+double Sum(Type a, Type b){
+	return a+b;
+}
+\end{minted}
+\caption{caption name}
+\label{lst:caption_name}
+\end{listing}
+
+
+
+
+\textbf{Bjarne on Templates:} is something you can parametrize with types or values. 
+
+Templates: manipulate things at compile time. But they have lousy interfaces. You cannot say what are the requirements of the elements of a vector.
+
+C++20 will have something called \texttt{concepts} that allows you to precisely specify template requirements on its elements.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -410,7 +504,7 @@ I believe the answer is in the class\_hierarchy.cpp code. The answer is that you
 
 
 
-In the \texttt{friend\_class.cpp} I don't understand the need to first declare the \texttt{Rectangle} class, then implement the \texttt{Square} class and then implemente \texttt{Rectangle}. I've tried to implemente \texttt{Rectangle} after \texttt{Square} and it works fine.
+In the \texttt{friend\_class.cpp} I don't understand the need to first declare the \texttt{Rectangle} class, then implement the \texttt{Square} class and then implemente \texttt{Rectangle}. I've tried to implement \texttt{Rectangle} after \texttt{Square} and it works fine.
 
 
 
