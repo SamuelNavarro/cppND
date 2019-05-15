@@ -1,0 +1,8 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{template} \PYG{o}{\PYGZlt{}}\PYG{k}{typename} \PYG{n}{T1}\PYG{p}{,} \PYG{k}{typename} \PYG{n}{T2}\PYG{o}{\PYGZgt{}}
+\PYG{k+kt}{void} \PYG{n}{multiply}\PYG{p}{(}\PYG{n}{T1} \PYG{n}{num1}\PYG{p}{,} \PYG{n}{T2} \PYG{o}{\PYGZam{}}\PYG{n}{container}\PYG{p}{)\PYGZob{}}
+	\PYG{k}{for}\PYG{p}{(} \PYG{k}{auto}\PYG{o}{\PYGZam{}} \PYG{n+nl}{element} \PYG{p}{:} \PYG{n}{container}\PYG{p}{)\PYGZob{}}
+		\PYG{n}{element} \PYG{o}{*=} \PYG{n}{num1}\PYG{p}{;}
+	\PYG{p}{\PYGZcb{}}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

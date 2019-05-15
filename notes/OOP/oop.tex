@@ -376,49 +376,6 @@ class Shape {
 
 
 
-\subsubsection{Constructor Syntax}%
-\label{ssub:constructor_syntax}
-
-Initialization lists are used for a number of reasons. 
-\begin{enumerate}
-	\item The compiler can optimize initialization faster than if the members were initialized from within the constructor. The code directly assigns to the class attributes. 
-	\item The second reason is a bit of a technical paradox. If you have a \textbf{constant} class attribute, you cann only initialize it using an initialization list. Otherwise, you would violate the \texttt{const} keyword simply by initializing the member in the constructor!
-	\item Attributes defined as references must use initialization lists.
-\end{enumerate}
-
-
-Initialization lists are particularly helpful for user-defined class members. IF you don't have access to the default constructor fo your attributes, you have a perfect use case for initialization lists. (Check \texttt{initialization\_list.cpp}
-
-
-\section{Project}%
-\label{sec:project}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -484,6 +441,23 @@ C++20 will have something called \texttt{concepts} that allows you to precisely 
 
 
 
+
+\subsection{Constructor Syntax}%
+\label{sub:constructor_syntax}
+
+Initialization lists are used for a number of reasons. 
+\begin{enumerate}
+	\item The compiler can optimize initialization faster than if the members were initialized from within the constructor. The code directly assigns to the class attributes. 
+	\item The second reason is a bit of a technical paradox. If you have a \textbf{constant} class attribute, you cann only initialize it using an initialization list. Otherwise, you would violate the \texttt{const} keyword simply by initializing the member in the constructor!
+	\item Attributes defined as references must use initialization lists.
+\end{enumerate}
+
+
+Initialization lists are particularly helpful for user-defined class members. IF you don't have access to the default constructor fo your attributes, you have a perfect use case for initialization lists. (Check \texttt{initialization\_list.cpp})
+
+
+\section{Project}%
+\label{sec:project}
 
 
 
