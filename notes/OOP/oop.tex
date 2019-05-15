@@ -376,6 +376,51 @@ class Shape {
 
 
 
+\subsubsection{Constructor Syntax}%
+\label{ssub:constructor_syntax}
+
+Initialization lists are used for a number of reasons. 
+\begin{enumerate}
+	\item The compiler can optimize initialization faster than if the members were initialized from within the constructor. The code directly assigns to the class attributes. 
+	\item The second reason is a bit of a technical paradox. If you have a \textbf{constant} class attribute, you cann only initialize it using an initialization list. Otherwise, you would violate the \texttt{const} keyword simply by initializing the member in the constructor!
+	\item Attributes defined as references must use initialization lists.
+\end{enumerate}
+
+
+Initialization lists are particularly helpful for user-defined class members. IF you don't have access to the default constructor fo your attributes, you have a perfect use case for initialization lists. (Check \texttt{initialization\_list.cpp}
+
+
+\section{Project}%
+\label{sec:project}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 \section{Questions}%
@@ -415,9 +460,23 @@ In the \texttt{friend\_class.cpp} I don't understand the need to first declare t
 
 
 
+Another one:
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+template <typename T1, typename T2>
+void multiply(T1 num1, T2 &container){
+	for( auto& element : container){
+		element *= num1;	
+	}
+}
+\end{minted}
+\caption{Template}
+\label{lst:template}
+\end{listing}
 
+I don't understand why we need to pass by reference the container and it's element in order to print the value after multiplication.
 
-
+Check code in \texttt{constructor\_syntax.cpp} when we apply \texttt{+=} to the referenced variable.
 
 
 \end{document}
