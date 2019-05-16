@@ -1,6 +1,12 @@
 #include <string>
 #include <vector>
 #include <fstream>
+#include <iostream>
+#include <iterator>
+
+#include "constants.h"
+#include "util.h"
+
 
 using namespace std;
 
@@ -27,4 +33,31 @@ class ProcessParser{
 		static bool isPidExisting(string pid);
 };
 
+
+
 // TODO: Define all of the above functions below:
+std::string getVmSize(std::string pid){
+	std::string line;
+	std::string name = "VmData";
+	std::string value;
+	float result;
+	
+	std::ifstream stream = Util::getStream(Path::basePath() + pid + Path::statPath());
+
+	while(std::getline(stream, line)){
+		if( line.compare(0, name.size(), name) == 0){
+			std::istringstream buf(line);
+			std::istream_iterator<std::string> beg(buf), end;
+			std::vector<std::string> values(beg, end);	
+		}
+	}
+
+
+}
+
+
+
+long int ProcessParser::getSysUpTime(){
+	std::ifstream uptime = Util::getStream(Path::upTimePath());
+	 
+}

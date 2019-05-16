@@ -41,3 +41,4 @@ enum CPUStatus {
 	S_GUEST,
 	S_GUEST_NICE
 };
+
