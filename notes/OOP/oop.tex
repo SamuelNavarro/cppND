@@ -459,7 +459,7 @@ Initialization lists are particularly helpful for user-defined class members. IF
 \section{Project}%
 \label{sec:project}
 
-
+In \texttt{ProcessParser::getCpuPercent(string pid)} in the ProcessParser.h file, the \texttt{sysconf(\_SC\_CLK\_TCK)} is going to give is the clock ticks of the host machine.   
 
 
 
@@ -494,6 +494,8 @@ Initialization lists are particularly helpful for user-defined class members. IF
 \section{Questions}%
 \label{sec:questions}
 
+\subsection{Scope Resolution in Class attrs}%
+\label{sub:scoperes_class_attrs}
 
 I don't understand why you need to apply the scope resolution operator on attributes in the definition of methods. Example:
 
@@ -521,14 +523,19 @@ I believe the answer is in the class\_hierarchy.cpp code. The answer is that you
 
 
 
+\subsection{Abstract Class}%
+\label{sub:abstract_class}
+
 
 
 In the \texttt{friend\_class.cpp} I don't understand the need to first declare the \texttt{Rectangle} class, then implement the \texttt{Square} class and then implemente \texttt{Rectangle}. I've tried to implement \texttt{Rectangle} after \texttt{Square} and it works fine.
 
 
+\subsection{Pass by Reference}%
+\label{sub:pass_by_reference}
 
 
-Another one:
+
 \begin{listing}[hbt!]
 \begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
 template <typename T1, typename T2>
@@ -545,6 +552,18 @@ void multiply(T1 num1, T2 &container){
 I don't understand why we need to pass by reference the container and it's element in order to print the value after multiplication.
 
 Check code in \texttt{constructor\_syntax.cpp} when we apply \texttt{+=} to the referenced variable.
+
+
+
+\subsection{Call to deleted Constructor}%
+\label{sub:call_to_deleted_constructor}
+
+It seems that the particularities on \texttt{std::ifstream} are unclear for me. Why do we need to pass by reference the \texttt{stream} object in order to properly call it in the file \textbf{ProcessParser.h}
+
+
+
+
+
 
 
 \end{document}

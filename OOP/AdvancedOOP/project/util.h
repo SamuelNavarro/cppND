@@ -1,12 +1,31 @@
 #include <string>
 #include <fstream>
+#include <sstream>
+#include <vector>
+#include <iterator>
 
 class Util{
 	public:
 		static std::string convertToTime( long int input_seconds );
 		static std::string getProgressBar(std::string percent);
 		static std::ifstream getStream(std::string path);
+		static std::string processFiles(std::string line, std::ifstream& stream, std::string name);
 };
+
+
+std::string Util::processFiles(std::string line, std::ifstream& stream, std::string name){
+	std::string result;
+	while(getline(stream, line)){
+		if(line.compare(0, name.size(), name) == 0){
+			std::istringstream buf(line);
+			std::istream_iterator<std::string> beg(buf), end;
+			std::vector<std::string> values(beg, end);
+			result = values[1];
+			break;
+		}
+	};
+	return result;
+}
 
 
 std::string Util::convertToTime(long int input_seconds){
@@ -49,4 +68,7 @@ std::ifstream Util::getStream(std::string path){
 	}
 	return stream;
 }
+
+
+
 
