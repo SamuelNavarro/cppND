@@ -27,8 +27,14 @@ The executables will be placed in the `bin` directory. From within `build`, you 
 ```
 ../bin/<name-of-parent-directory> -f ../map.osm
 ```
+![](map.png)
+
+
 or
 
 ```
 ../bin/<name-of-parent-directory> -f ../map_mex.osm
 ```
+
+
+![](./mexico.png)
