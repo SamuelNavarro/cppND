@@ -1,62 +1,62 @@
+
+#pragma once
+#include <algorithm>
 #include <iostream>
+#include <math.h>
+#include <thread>
+#include <chrono>
+#include <iterator>
 #include <string>
+#include <stdlib.h>
+#include <stdio.h>
 #include <vector>
 #include <fstream>
 #include <sstream>
-#include <iterator>
-#include <unistd.h>
+#include <stdexcept>
+#include <cerrno>
+#include <cstring>
 #include <dirent.h>
 #include <time.h>
-#include <cstring>
-#include <cerrno>
-#include <algorithm>
-#include <experimental/filesystem>
-
-
+#include <unistd.h>
 #include "constants.h"
 #include "util.h"
 
-
 using namespace std;
 
-
 class ProcessParser{
-	private:
-		std::ifstream stream;
+    private:
+        ifstream stream;
     public:
-		static string getCmd(string pid); //Check
-		static vector<string> getPidList();  //Check
-		static string getVmSize(string pid);  // Check
-		static string getCpuPercent(string pid);  //check
-		static long int getSysUpTime();   //check
-		static string getProcUpTime(string pid); //check
-		static string getProcUser(string pid); //check
-		static int getNumberCores(); //check
-		static vector<string> getSysCpuPercent(string coreNumber=""); //Check
-		static float getSysRamPercent(); //check
-		static string getSysKernelVersion(); //check
-		static int getTotalThreads(); //check
-		static int getTotalNumberOfProcesses();
-		static int getNumberOfRunningProcesses(); //check
-		static string getOSName(); //check
-		static string PrintCpuStats(vector<string> values1, vector<string>values2); //check
-		static bool isPidExisting(string pid);
+        static string getCmd(string pid);
+        static vector<string> getPidList();
+        static string getVmSize(string pid);
+        static string getCpuPercent(string pid);
+        static long int getSysUpTime();
+        static string getProcUpTime(string pid);
+        static string getProcUser(string pid);
+        static int getNumberCores();
+        static vector<string> getSysCpuPercent(string coreNumber = "");
+        static float getSysRamPercent();
+        static string getSysKernelVersion();
+        static int getTotalThreads();
+        static int getTotalNumberOfProcesses();
+        static int getNumberOfRunningProcesses();
+        static string getOSName();
+        static string PrintCpuStats(std::vector<std::string> values1, std::vector<std::string>values2);
+        static bool isPidExisting(string pid);
 };
-
-
 
 // TODO: Define all of the above functions below:
 string ProcessParser::getVmSize(string pid){
-	string line;
-	string name = "VmData";
-	vector<string> values;
+    string line;
+    string name = "VmData";
+    vector<string> values;
 
-	ifstream stream = Util::getStream((Path::basePath() + pid + Path::statusPath()));
+    ifstream stream = Util::getStream((Path::basePath() + pid + Path::statusPath()));
 
-	values = Util::processFiles(line, stream, name);	
-	return to_string(stof(values[1])/float(1024));
+    values = Util::processFiles(line, stream, name);	
+    return to_string(stof(values[1])/float(1024));
 }
-
 
 
 string ProcessParser::getCpuPercent(string pid){
@@ -97,7 +97,6 @@ string ProcessParser::getProcUpTime(string pid){
 	vector<string> values(beg, end);
 	return to_string(float(stof(values[13])/sysconf(_SC_CLK_TCK)));
 }
-
 
 
 long int ProcessParser::getSysUpTime(){
@@ -200,6 +199,7 @@ vector<string> ProcessParser::getSysCpuPercent(string coreNumber){
 
 
 
+
 float getSysActiveCpuTime(vector<string> values)
 {
     return (stof(values[S_USER]) +
@@ -231,31 +231,42 @@ string ProcessParser::PrintCpuStats(vector<string> values1, vector<string>values
 
 
 
+
 float ProcessParser::getSysRamPercent(){
+string line;
+    string name1 = "MemAvailable:";
+    string name2 = "MemFree:";
+    string name3 = "Buffers:";
 
-	ifstream stream1 = Util::getStream((Path::basePath() + Path::memInfoPath()));
-	ifstream stream2 = Util::getStream((Path::basePath() + Path::memInfoPath()));
-	ifstream stream3 = Util::getStream((Path::basePath() + Path::memInfoPath()));
+    string value;
+    ifstream stream = Util::getStream((Path::basePath() + Path::memInfoPath()));
+    float totalMem = 0;
+    float freeMem = 0;
+    float buffers = 0;
+    while (std::getline(stream, line)) {
+        if (totalMem != 0 && freeMem != 0)
+            break;
+        if (line.compare(0, name1.size(), name1) == 0) {
+            istringstream buf(line);
+            istream_iterator<string> beg(buf), end;
+            vector<string> values(beg, end);
+            totalMem = stof(values[1]);
+        }
+        if (line.compare(0, name2.size(), name2) == 0) {
+            istringstream buf(line);
+            istream_iterator<string> beg(buf), end;
+            vector<string> values(beg, end);
+            freeMem = stof(values[1]);
+        }
+        if (line.compare(0, name3.size(), name3) == 0) {
+            istringstream buf(line);
+            istream_iterator<string> beg(buf), end;
+            vector<string> values(beg, end);
+            buffers = stof(values[1]);
+        }
+    }
+    return float(100.0*(1-(freeMem/(totalMem-buffers))));
 
-	string line;
-	string name1 = "MemAvailable:";
-	string name2 = "MemFree:";
-	string name3 = "Buffers:";
-
-	float totalMem = 0;
-	float freeMem = 0;
-	float buffers = 0;
-
-	vector<string> values1 = Util::processFiles(line, stream1, name1);
-	totalMem = stof(values1[1]);
-
-    vector<string> values2 = Util::processFiles(line, stream2, name2);
-	freeMem = stof(values2[1]);
-
-	vector<string> values3 = Util::processFiles(line, stream3, name3);
-	buffers = stof(values3[1]);
-
-	return float(100.0*(1 - (freeMem/(totalMem-buffers))));
 
 }
 
@@ -269,9 +280,6 @@ string ProcessParser::getSysKernelVersion(){
 }
 
 
-// why using erase-remove idiom:
-// https://en.wikipedia.org/wiki/Erase%E2%80%93remove_idiom
-// https://en.wikipedia.org/wiki/Erase-remove_idiom
 string ProcessParser::getOSName(){
 	string line;
 	string name = "PRETTY_NAME="; 
