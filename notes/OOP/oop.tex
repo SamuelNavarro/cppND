@@ -463,6 +463,38 @@ In \texttt{ProcessParser::getCpuPercent(string pid)} in the ProcessParser.h file
 
 
 
+In the CPU states enum, when you initialize the first one to 1, the second will be 2 and so on:
+
+
+
+From SysInfo: Every object in C++ has a memory address, and you have a pointer called \texttt{this} and this pointer is a way of accessing this. In fact, all of the member functions can be access in such a way. 
+
+But, if you have a \texttt{friend} class it won't have \texttt{this} because basically \texttt{friends} are not member of a class.
+
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+enum CPUStatus {
+	S_USER = 1,
+	S_NICE,
+	S_SYSTEM,
+	S_IDLE,
+	S_IOWAIT,
+	S_IRQ,
+	S_SOFTIRQ,
+	S_STEAL,
+	S_GUEST,
+	S_GUEST_NICE
+};
+\end{minted}
+\caption{enum}
+\label{lst:enum}
+\end{listing}
+
+
+
+
 
 
 
@@ -560,9 +592,65 @@ Check code in \texttt{constructor\_syntax.cpp} when we apply \texttt{+=} to the 
 
 It seems that the particularities on \texttt{std::ifstream} are unclear for me. Why do we need to pass by reference the \texttt{stream} object in order to properly call it in the file \textbf{ProcessParser.h}
 
+\subsection{Scopes in Control Flow}%
+\label{sub:scopes_in_control_flow}
+
+Need to fully understand the control flow operations. 
+
+
+\begin{listing}[hbt!]
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+int ProcessParser::get_number_of_cores()
+{
+    // Get the number of host cpu cores
+    string line;
+    string name = "cpu cores";
+    ifstream stream = Util::getStream((Path::basePath() + "cpuinfo"));
+    while (std::getline(stream, line)) {
+        if (line.compare(0, name.size(),name) == 0) {
+            istringstream buf(line);
+            istream_iterator<string> beg(buf), end;
+            vector<string> values(beg, end);
+            return stoi(values[3]);
+        }
+    }
+    return 0;
+}
+
+
+// My previous implementation had:
+
+int ProcessParser::get_number_of_cores()
+{
+	string result;
+	.
+	.
+	.
+			vector<string> values(beg, end);
+			result = values[1];
+			break;
+		} // End of if	
+	}; // End of while.
+	return result;
+} // End of function
+
+\end{minted}
+\caption{Control Flow}
+\label{lst:control_flow}
+\end{listing}
 
 
 
+
+
+
+
+\section{TODO}%
+\label{sec:todo}
+
+\begin{enumerate}
+	\item Implement \texttt{ProcessParser::getPidList} with \textbf{std::experimental::filesystem}
+\end{enumerate}
 
 
 

@@ -1,0 +1,26 @@
+*.osm
+build/
+instructions/
+
+
+
+/* Out files * /
+*.out
+
+/* Latex junk */
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.synctex.gz
+*_minted-IntroCPP/
+*.toc
+*_minted-oop/
+
+
+
+/* project repo */
+CppND-System-Monitor/
+
+
+tags

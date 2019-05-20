@@ -1,8 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k}{class} \PYG{n+nc}{someClass}\PYG{p}{\PYGZob{}}
-	\PYG{k}{private}\PYG{o}{:}
-		\PYG{n}{std}\PYG{o}{::}\PYG{n}{string} \PYG{n}{name}\PYG{p}{;}
-	\PYG{k}{public}\PYG{o}{:}
-		\PYG{n}{std}\PYG{o}{::}\PYG{n}{string} \PYG{n}{getName}\PYG{p}{()} \PYG{k}{const}\PYG{p}{;}
-\PYG{p}{\PYGZcb{};}
-\end{Verbatim}
