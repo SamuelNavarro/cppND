@@ -25,7 +25,8 @@ vector<string> Util::processFiles(string line, ifstream& stream, string name){
             istream_iterator<string> beg(buf), end;
             vector<string> values(beg, end);
             return values;
-            }
+			break;
+        }
     };
     return (vector<string>());
 }
