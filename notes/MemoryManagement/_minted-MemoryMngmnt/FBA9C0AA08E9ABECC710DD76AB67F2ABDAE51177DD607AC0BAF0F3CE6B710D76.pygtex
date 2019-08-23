@@ -1,9 +1,0 @@
-\begin{Verbatim}[commandchars=\\\{\}]
-\PYG{k+kt}{int} \PYG{n}{var} \PYG{o}{=} \PYG{l+m+mi}{10}\PYG{p}{;}
-\PYG{c+c1}{// we are requesting value of variable var:}
-\PYG{n}{std}\PYG{o}{::}\PYG{n}{cout}\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{n}{var}\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
-\PYG{c+c1}{// 10}
-\PYG{c+c1}{// we are requesting memory address of variable var:}
-\PYG{n}{std}\PYG{o}{::}\PYG{n}{cout}\PYG{o}{\PYGZlt{}\PYGZlt{}\PYGZam{}}\PYG{n}{var}\PYG{o}{\PYGZlt{}\PYGZlt{}}\PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
-\PYG{c+c1}{// e.g. =\PYGZgt{} 0x7ffe318d531c}
-\end{Verbatim}
