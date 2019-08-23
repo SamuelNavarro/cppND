@@ -14,6 +14,7 @@ instructions/
 *.log
 *.synctex.gz
 *_minted-IntroCPP/
+*_minted*/
 *.toc
 *_minted-oop/
 
