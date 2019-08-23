@@ -1,0 +1,566 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{minted}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{musixtex}
+\graphicspath{{./images/}}
+
+\setlength{\parindent}{0em}
+\setlength{\parskip}{1em}
+
+\begin{document}
+\title{Memory Management}
+\author{Samuel Navarro}
+\date{\today}
+\maketitle
+\tableofcontents{}
+	
+
+
+
+
+
+
+Pointers literally points to a memory address. References are aliases for other objects. In practice, compilers typically implement references using the memory address of an object so \textit{pointers} and \textit{references} have a complementary role. 
+
+
+\textit{Pointers} point to a memory address and \textit{references} refer to whatever is stored in that memory address but conceptually, a \textit{reference} for a variable is just an alias for that variable. 
+
+
+\textbf{Bjarne on RAII} is the idea that when  you come in scope (a function or whatever) you initialize an object, hold those resources, and at the end of the scope they get released automatically. 
+
+In general, memory management in C++ can be split into two major categories by their storage in the host machine. When we analyze this classification, we have two main concepts: stack and heap.
+
+\textbf{The Stack}
+
+\begin{enumerate}
+	\item only local variables
+	\item resizing of variables cannot be done
+	\item efficiently managed space by CPU, memory does not become fragmented
+	\item very quick access
+	\item there is a limit on stack size (OS-dependent)
+	\item explicit de-allocation of variables is not mandatory
+\end{enumerate}
+
+\textbf{The Heap}
+
+\begin{enumerate}
+	\item memory must be managed
+	\item memory size is not limited
+	\item access is relatively slower
+	\item realloc() is used for the resizing of variables
+	\item variables can be accessed globally
+	\item efficient use of space is not guaranteed, memory can become fragmented over time when blocks of memory are allocated, then freed
+\end{enumerate}
+
+
+
+
+\textbf{Bjarne on Stack and Heap} What is the difference between the stack and the heap?
+
+
+When you call a function it increases the stack with a stack frame that represent the function. You call another function and you go up, when you return you go back again. 
+
+But if you want data that lives from one function to another you have to have it somewhere else. \textit{(In principle you can refer stack down in the frame but you can't refer up)} so you have memory on the side, give me some of that and I'll keep it and when I finish I will give it back. That's known as the heap or the dynamic memory or the free store. You get it with an operation call \texttt{new}. And then, eventually you have a \texttt{delete}  that releases this memory (it gets recycled but explicitly).  
+
+
+\section{Pointers}%
+\label{sec:pointers}
+
+
+
+A \textbf{pointer} is a primitive data type that keeps track of a memory address. It's designated with the dereference operator \texttt{*}. A \textbf{pointer} provides access to 2 pieces of information, a memory address and a value. 
+
+
+\textbf{Bjarne on pointers:} All the data in memory are sequences of objects and you can refer to them by pointers, which are machine addresses with a type. In memory \textbf{pointers} and \textbf{references} look the same. 
+
+A \textbf{pointer} you then associate, \textit{at compile time}, the type with it, so that you know that you are pointing to \texttt{int, float}, etc.  
+
+
+
+
+
+
+\section{References}%
+\label{sec:references}
+
+
+References are declared by the ampersend operator \texttt{\&}. 
+
+As a rule of thumb, they are safer than pointers because they are less prone to memory leaks. 
+
+Some of the typical deficiencies of references in compare with pointers are:
+
+\begin{itemize}
+	\item When reference is created it cannot be re - initialized
+	\item References cannot be initialized to NULL value, which is often used to indicate that pointers aren't showing to any memory location
+  \item A reference must be initialized with valid data - meaning that they are only declared when they have valid memory address to reference
+\end{itemize}
+
+
+
+When declare a reference to specific data in C++, we are inheriting all related data for that specific variable. So, besides the basic value of that data, we are inheriting information about memory location of that specific value. Having that in mind, when we perform any data manipulation of our created reference, we are affecting our initial variable. Explanation of that behaviour comes from a fact that reference is just a representation of a variable upon which we declared our reference.
+In specific point of view, we can imagine references as primitive pointers, because they also carry information about data memory location. Besides that, reference is also a operator, which can be used for operation of referencing. Referencing data in C++ states that we are requesting memory location of wanted data.
+
+
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+int var = 10;
+// we are requesting value of variable var:
+std::cout<<var<<std::endl;
+// 10
+// we are requesting memory address of variable var:
+std::cout<<&var<<std::endl;
+// e.g. => 0x7ffe318d531c
+\end{minted}
+\caption{Operation of Referencing}
+\label{lst:operation_of_referencing}
+\end{listing}
+
+
+
+References are much more efficient for usage in C++, because they are preventing memory leakage, they are safer from a point of memory management and they are easier to use.
+Reference are popular as input and return values in functions. With this technique, we are preventing copying of our data from one part of program to another and we are certain that any changes in a function will affect our original data.
+
+
+\textit{Bjarne on References}: A lot of the times you want to point to something. One of the reasons is that you don't want to move the stuff around all the time. In C++ \textbf{pointers} and \textbf{references} are roughly the same except that is easy to use a reference. You don't have to say, go ahead and get it. You just use it.  
+
+Another reason is that a \textbf{reference} cannot be made to refer to a different object. 
+
+\subsection{References example}%
+\label{sub:references_example}
+
+We convert the \texttt{string} to c-string a lot of the times (Why? - the reason the instructor give is that for example Windows api even requires you to use c-strings).  
+
+This line:
+
+\texttt{const char* ptr = str.c\_str();} 
+
+Gives us the address of the first element in the string because the c string is basically a character array.
+
+
+The addSpaces function makes operations on the string just by knowing its address. 
+
+\section{New and Delete}%
+\label{sec:new_and_delete}
+
+C++ comes with two types of memory allocation: static and dynamic. 
+
+Static memory allocation occurs at compile time. Dynamic memory allocation occurs at run time; the compiler does not know whether or how much data will be required, so the program itself has to allocate this memory when it runs. For example, you are programming a game and you don't know how many players there will be ahead of time. You may use dynamic memory to create objects for each players as they come to the game. 
+
+Dynamic memory is allocated on the heap, which is often referred as the \textit{free store}. 
+
+
+\textbf{Bjarne on new and delete:} My rule of thumb is don't use \texttt{new} and \texttt{delete} in application code. (?) \texttt{new} and \texttt{delete} belongs in the implementations of you abstractions. So, if you use vector and string, you don't use new and delete because that is hidden inside the abstraction. 
+
+
+
+
+\subsection{Description of New}%
+\label{sub:description_of_new}
+
+Before any action, couple of requests needs to be fulfilled for successful allocation. First of all we need to have sufficient memory and we need to know which type of data ( what size of memory) we are reserving for our usage. After these requirements are fulfilled we can perfom memory allocation. Next action is allocation of memory and return of memory address in heap.
+General purpose syntax is:
+
+\texttt{pointer = new type-specifier} 
+
+In this context we can see that pointer is used to access this newly created data. We are using pointers because this performed actions returns memory address. Technique for usage of memory addresses in C++ is usage of pointers. Next in line is type-specifier. This can be any user defined or default defined data type (classes, structures, char, int, float, double). Besides that, data types could be array like structures, where we can defined arrays of mentioned data types.
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+// Example program
+#include <iostream>
+
+int main()
+{
+    double *ptr = new double(23);
+    double *arr_ptr =  new double[4];
+    for( int i = 0; i<3; i++) {
+        *ptr = ++ *ptr;
+        std::cout<< "Address: "<<ptr<<" Value: "<<*ptr<<std::endl;
+        std::cout<< "Address array: "
+				<<arr_ptr<<" Value array: "
+				<<arr_ptr[i]<<std::endl;
+    }
+}
+// OUTPUT: 
+/*
+Address: 0x1a809e0 Value: 24
+Address array: 0x1a80a00 Value array: 0
+Address: 0x1a809e0 Value: 25
+Address array: 0x1a80a00 Value array: 0
+Address: 0x1a809e0 Value: 26
+Address array: 0x1a80a00 Value array: 0
+*/
+\end{minted}
+\caption{New and Delete Code}
+\label{lst:new_and_delete}
+\end{listing}
+
+
+The point of this example is to understand that the variable is in the same address but it's value is changing. 
+
+The dereference operator \texttt{*} is used to get or access the value. 
+
+
+
+
+
+
+
+
+\subsection{Delete Operator}%
+\label{sub:delete_operator}
+
+
+When you use \texttt{delete} operator on a given memory address, this means that compiler is going to this address in memory and deleting its content where the process is finished when this part of memory is marked as unoccupied (free).
+
+
+
+\texttt{delete pointer-variable;} 
+
+
+Releasing block of memory, occupied by array - like data structure is done similarly as complementary allocation. We use square brackets (" [ ] "), to signal that we are deallocating block of memory which allocated on a given address.
+
+
+
+
+\texttt{delete[] pointer-variable;} 
+
+
+
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+// Illustration of memory allocation and deallocation
+int main() {
+int *ptr = nullptr;
+/*
+When using new, best practice in coding states that we need
+to enclose it within a try-catch block. The new operator throws
+an exception and does not return a value. To force the new
+operator to return a value, you canuse the nothrow
+qualifier as shown below:
+*/
+ptr = new(std::nothrow) int;
+if (!ptr) {
+ std::cout << "Mem alloc failed!" << std::endl;
+}
+else {
+    // assigning value to newly allocated address
+    *ptr = 31;
+    // checking our pointer state:
+    std::cout<<" Address is: " << ptr << std::endl;
+    std::cout<<" Value is: " << *ptr << std::endl;
+}
+
+// We are creating pointer to array of integers
+int *arr_ptr = new(std::nothrow) int[3];
+// We are storing new values to created array
+// 0 1 4
+for (int i=0; i<3; i++)
+    arr_ptr[i] = (i*i);
+
+// Writing our arr_ptr pointer info:
+for (int i=0; i<3; i++) {
+    // notice notation for retrieval of memory address
+    // in array pointers ( we are using references)
+    std::cout<<" Address is: " << &arr_ptr[i] << std::endl;
+    std::cout<<" Value is: " << arr_ptr[i] << std::endl;
+}
+
+// Before our program is finished, we have responsibility
+// to deallocate all of our allocated memory:
+
+// integer pointer
+delete ptr;
+// array of integers pointer - block of memory
+delete[] arr_ptr;
+
+return 0;
+}
+\end{minted}
+\caption{Delete Operator}
+\label{lst:delete_operator}
+\end{listing}
+
+
+
+\textbf{Bjarne on Memory Leaks:} You get something from the heap and then you throw your pointer away. Now, nobody know that this \texttt{int} is still sitting over there. 
+
+
+
+
+\section{Memset and Malloc}%
+\label{sec:memset_and_malloc}
+
+\subsection{Memset}%
+\label{sub:memset}
+
+The prototype of memset is:
+
+\texttt{void * memset ( void * ptr, int value, size\_t num );} 
+
+
+where ptr is memory address of memory we want to initialize, value is value which will be used to set this memory space. The value is passed as an int, however it is first converted to unsigned char and then placed by the function into the memory block. num is used to signal how many bytes we are initializing.
+
+Memset is usually used for initialization of values. When we take into consideration that we can use following data structure:
+
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+struct Point{
+
+  char x;
+	char y;
+};
+\end{minted}
+\caption{Memset example}
+\label{lst:memset_example}
+\end{listing}
+
+
+And if declare instance of Point data type \texttt{Point p1;} 
+
+Then, char values in this structure are going to be undefined or have some values from the last usage of that part of the stack. They are un predictable. Having that in mind we can use memset to set default values for this data type. We need to have in mind that this concept and approach is also used because memset is significantly faster function then user defined ones. So our code could look something like this:
+
+
+Note: we need to include $<cstring>$ library or $<string.h>$ for usage of memset
+
+\texttt{memset(\&p1, '-', sizeof(p1));} 
+
+
+\subsection{Malloc}%
+\label{sub:malloc}
+
+Its function is to allocate a block of specific \textbf{size}, measured in bytes of memory, where result of this operation (function) is pointer to the beginning of the block. Data stored in this memory block is not initialized, which means that this space has non determinate values.
+Prototype of this function is:
+
+\texttt{void* malloc(size\_t size);} 
+
+Size is unsigned integer value which represent memory block in bytes. It is important to note that in case of failed allocation return value is null pointer.
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+
+// Included library for memset
+#include <cstring>
+// included library for malloc
+#include <cstdlib>
+int main() {
+    int *ptr = NULL;
+    // Notice how pointer is allocated to single int memory space 
+    // but later is redicerted to show to memory block
+    ptr = new(std::nothrow) int;
+    //  We can initialize memory block using malloc
+    //  declaring memory space for array of 4 integers
+    ptr = (int*)std::malloc(4*sizeof(int));
+        for (int i=0; i<4; i++){
+        std::cout << "Address: "
+        << &ptr[i] << " Value: "<< ptr[i] << std::endl;
+    }
+    // every memory place is used for initialization of specific value
+    // here we are using letters for values, but casted to ints
+    for( int i=0; i<4; i++){
+        // sending address by reference
+        std::memset(&ptr[i],('A' + i), sizeof(int));
+    }
+    // Printing state of our array
+    // we are converting int values to char to see what 
+    // is happening with our values.
+    for (int i=0; i<4; i++){
+        std::cout << "Address: " << &ptr[i]
+        << " Value: "<< char(ptr[i])
+        << std::endl;
+    }
+    /* OUTPUT:
+    Address: 0x1031c20 Value: 0
+    Address: 0x1031c24 Value: 0
+    Address: 0x1031c28 Value: 0
+    Address: 0x1031c2c Value: 0
+    Address: 0x1031c20 Value: A
+    Address: 0x1031c24 Value: B
+    Address: 0x1031c28 Value: C
+    Address: 0x1031c2c Value: D
+    */
+    return 0;
+
+		AUNQUE FALTA delete
+
+}
+
+\end{minted}
+\caption{Malloc Example}
+\label{lst:malloc_example}
+\end{listing}
+
+
+
+
+\textbf{malloc} is not something that we really use. \texttt{malloc} is basically a forerunner to \texttt{new}. We'll use \texttt{new}. We'll not use \texttt{malloc}. But \texttt{malloc} will be in legacy code. 
+
+
+One thing to consider is that we need to write for loops to check the size:
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+
+// We need to cast the return value of malloc because
+// the return value of malloc is a pointer to the
+// first spot of the block. It'll contain
+// a pointer which will be of type void.
+// So I need to cast it to int
+ptr = (int*)std::malloc(5*sizeof(int));
+
+for (int i=0; i<500; i++){
+ // ESTO ES LO QUE TENEMOS QUE REVISAR
+ // PORQUE EL TAMAÑO ERA 5 * sizeof(int)
+}
+\end{minted}
+\caption{Malloc Checks}
+\label{lst:malloc_checks}
+\end{listing}
+
+
+
+
+\section{Scope}%
+\label{sec:scope}
+
+In general, scope can be viewed as the extent up to which some resource can be used and worked with. In programming also scope of a variable is defined as the extent of the program code within which the variable can we accessed or declared or worked with. A scope can be defined by many ways : it can be defined by namespace, functions, classes and just { }.
+
+
+
+\textbf{Global Variable}
+
+Global variables are defined outside of all the functions, usually on top of the program. The global variables will hold their value throughout the life-time of your program.
+
+A global variable can be accessed by any function. That is, a global variable is available for use throughout your entire program after its declaration.
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+#include <iostream>
+// Global variable declaration:
+int glob;
+int main () {
+    glob = 10;
+    glob ++;
+    std::cout << glob << std::endl;
+    // OUTPUT: 11
+    return 0;
+}
+\end{minted}
+\caption{Global Variable}
+\label{lst:global_variable}
+\end{listing}
+
+
+
+
+
+There are also \textbf{Local Variables and Namespaces}
+
+
+
+Namespaces were introduced in C++, as a new feature not inherited from C. Namespaces are used for definition of scopes, where we can create our on namespaces within same program, which have they own scope.
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+// Variable created inside namespace
+namespace myNamespace
+{ 
+    int val = 123;
+} 
+
+// Global variable
+int val = 100;
+
+int main() {
+    // Local variable
+    int val = 200;
+
+    // These variables can be accessed from
+    // outside the namespace by using the scope
+    // operator :: -> also known as scope resolution operator
+
+    // namespace variable value
+    std::cout << myNamespace::val << std::endl;
+    // global variable value
+    std::cout << ::val << std::endl;
+    // local variable value
+    std::cout << val << std::endl;
+
+    // OUTPUT:
+    // 123
+    // 100
+    // 200
+    return 0;
+}
+\end{minted}
+\caption{Namespaces}
+\label{lst:namespaces}
+\end{listing}
+
+
+
+
+
+This is a general example of \textbf{Scope}:
+
+
+\begin{listing}
+\begin{minted}[linenos,numbersep=5pt,frame=lines,framesep=2mm]{cpp}
+int val;
+//this variable val is defined in global namespace
+// which means, its scope is global. It exists
+// everywhere.
+
+namespace _namespace
+{
+     int val;  
+    // it is defined in a local namespace called '_namespace'
+    // outside _namespace it doesn't exist.
+}
+void _func()
+{
+   int val;  
+    // scope is the function itself.
+    // outside the function, a doesn't exist.
+   {
+        int val; //the curly braces defines this scope
+   }
+}
+class _class
+{
+   int val;  
+    // scope is the class itself.
+    // outside class _class, it doesn't exist.
+};
+\end{minted}
+\caption{Scope}
+\label{lst:scope}
+\end{listing}
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}

@@ -1,0 +1,12 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}iostream\PYGZgt{}}
+\PYG{c+c1}{// Global variable declaration:}
+\PYG{k+kt}{int} \PYG{n}{glob}\PYG{p}{;}
+\PYG{k+kt}{int} \PYG{n+nf}{main} \PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{n}{glob} \PYG{o}{=} \PYG{l+m+mi}{10}\PYG{p}{;}
+    \PYG{n}{glob} \PYG{o}{++}\PYG{p}{;}
+    \PYG{n}{std}\PYG{o}{::}\PYG{n}{cout} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{glob} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+    \PYG{c+c1}{// OUTPUT: 11}
+    \PYG{k}{return} \PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

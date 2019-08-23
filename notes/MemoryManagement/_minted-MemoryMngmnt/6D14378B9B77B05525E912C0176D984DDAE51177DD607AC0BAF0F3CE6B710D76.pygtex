@@ -1,0 +1,47 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{// Included library for memset}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}cstring\PYGZgt{}}
+\PYG{c+c1}{// included library for malloc}
+\PYG{c+cp}{\PYGZsh{}include} \PYG{c+cpf}{\PYGZlt{}cstdlib\PYGZgt{}}
+\PYG{k+kt}{int} \PYG{n+nf}{main}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{k+kt}{int} \PYG{o}{*}\PYG{n}{ptr} \PYG{o}{=} \PYG{n+nb}{NULL}\PYG{p}{;}
+    \PYG{c+c1}{// Notice how pointer is allocated to single int memory space}
+    \PYG{c+c1}{// but later is redicerted to show to memory block}
+    \PYG{n}{ptr} \PYG{o}{=} \PYG{k}{new}\PYG{p}{(}\PYG{n}{std}\PYG{o}{::}\PYG{n}{nothrow}\PYG{p}{)} \PYG{k+kt}{int}\PYG{p}{;}
+    \PYG{c+c1}{//  We can initialize memory block using malloc}
+    \PYG{c+c1}{//  declaring memory space for array of 4 integers}
+    \PYG{n}{ptr} \PYG{o}{=} \PYG{p}{(}\PYG{k+kt}{int}\PYG{o}{*}\PYG{p}{)}\PYG{n}{std}\PYG{o}{::}\PYG{n}{malloc}\PYG{p}{(}\PYG{l+m+mi}{4}\PYG{o}{*}\PYG{k}{sizeof}\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{));}
+        \PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i}\PYG{o}{\PYGZlt{}}\PYG{l+m+mi}{4}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)\PYGZob{}}
+        \PYG{n}{std}\PYG{o}{::}\PYG{n}{cout} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{l+s}{\PYGZdq{}Address: \PYGZdq{}}
+        \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{o}{\PYGZam{}}\PYG{n}{ptr}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{l+s}{\PYGZdq{} Value: \PYGZdq{}}\PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{ptr}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+    \PYG{p}{\PYGZcb{}}
+    \PYG{c+c1}{// every memory place is used for initialization of specific value}
+    \PYG{c+c1}{// here we are using letters for values, but casted to ints}
+    \PYG{k}{for}\PYG{p}{(} \PYG{k+kt}{int} \PYG{n}{i}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i}\PYG{o}{\PYGZlt{}}\PYG{l+m+mi}{4}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)\PYGZob{}}
+        \PYG{c+c1}{// sending address by reference}
+        \PYG{n}{std}\PYG{o}{::}\PYG{n}{memset}\PYG{p}{(}\PYG{o}{\PYGZam{}}\PYG{n}{ptr}\PYG{p}{[}\PYG{n}{i}\PYG{p}{],(}\PYG{l+s+sc}{\PYGZsq{}A\PYGZsq{}} \PYG{o}{+} \PYG{n}{i}\PYG{p}{),} \PYG{k}{sizeof}\PYG{p}{(}\PYG{k+kt}{int}\PYG{p}{));}
+    \PYG{p}{\PYGZcb{}}
+    \PYG{c+c1}{// Printing state of our array}
+    \PYG{c+c1}{// we are converting int values to char to see what}
+    \PYG{c+c1}{// is happening with our values.}
+    \PYG{k}{for} \PYG{p}{(}\PYG{k+kt}{int} \PYG{n}{i}\PYG{o}{=}\PYG{l+m+mi}{0}\PYG{p}{;} \PYG{n}{i}\PYG{o}{\PYGZlt{}}\PYG{l+m+mi}{4}\PYG{p}{;} \PYG{n}{i}\PYG{o}{++}\PYG{p}{)\PYGZob{}}
+        \PYG{n}{std}\PYG{o}{::}\PYG{n}{cout} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{l+s}{\PYGZdq{}Address: \PYGZdq{}} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{o}{\PYGZam{}}\PYG{n}{ptr}\PYG{p}{[}\PYG{n}{i}\PYG{p}{]}
+        \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{l+s}{\PYGZdq{} Value: \PYGZdq{}}\PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{k+kt}{char}\PYG{p}{(}\PYG{n}{ptr}\PYG{p}{[}\PYG{n}{i}\PYG{p}{])}
+        \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+    \PYG{p}{\PYGZcb{}}
+    \PYG{c+cm}{/* OUTPUT:}
+\PYG{c+cm}{    Address: 0x1031c20 Value: 0}
+\PYG{c+cm}{    Address: 0x1031c24 Value: 0}
+\PYG{c+cm}{    Address: 0x1031c28 Value: 0}
+\PYG{c+cm}{    Address: 0x1031c2c Value: 0}
+\PYG{c+cm}{    Address: 0x1031c20 Value: A}
+\PYG{c+cm}{    Address: 0x1031c24 Value: B}
+\PYG{c+cm}{    Address: 0x1031c28 Value: C}
+\PYG{c+cm}{    Address: 0x1031c2c Value: D}
+\PYG{c+cm}{    */}
+    \PYG{k}{return} \PYG{l+m+mi}{0}\PYG{p}{;}
+
+		\PYG{n}{AUNQUE} \PYG{n}{FALTA} \PYG{k}{delete}
+
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

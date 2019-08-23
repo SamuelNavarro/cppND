@@ -1,0 +1,32 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{c+c1}{// Variable created inside namespace}
+\PYG{k}{namespace} \PYG{n}{myNamespace}
+\PYG{p}{\PYGZob{}}
+    \PYG{k+kt}{int} \PYG{n}{val} \PYG{o}{=} \PYG{l+m+mi}{123}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+
+\PYG{c+c1}{// Global variable}
+\PYG{k+kt}{int} \PYG{n}{val} \PYG{o}{=} \PYG{l+m+mi}{100}\PYG{p}{;}
+
+\PYG{k+kt}{int} \PYG{n+nf}{main}\PYG{p}{()} \PYG{p}{\PYGZob{}}
+    \PYG{c+c1}{// Local variable}
+    \PYG{k+kt}{int} \PYG{n}{val} \PYG{o}{=} \PYG{l+m+mi}{200}\PYG{p}{;}
+
+    \PYG{c+c1}{// These variables can be accessed from}
+    \PYG{c+c1}{// outside the namespace by using the scope}
+    \PYG{c+c1}{// operator :: \PYGZhy{}\PYGZgt{} also known as scope resolution operator}
+
+    \PYG{c+c1}{// namespace variable value}
+    \PYG{n}{std}\PYG{o}{::}\PYG{n}{cout} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{myNamespace}\PYG{o}{::}\PYG{n}{val} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+    \PYG{c+c1}{// global variable value}
+    \PYG{n}{std}\PYG{o}{::}\PYG{n}{cout} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{o}{::}\PYG{n}{val} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+    \PYG{c+c1}{// local variable value}
+    \PYG{n}{std}\PYG{o}{::}\PYG{n}{cout} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{val} \PYG{o}{\PYGZlt{}\PYGZlt{}} \PYG{n}{std}\PYG{o}{::}\PYG{n}{endl}\PYG{p}{;}
+
+    \PYG{c+c1}{// OUTPUT:}
+    \PYG{c+c1}{// 123}
+    \PYG{c+c1}{// 100}
+    \PYG{c+c1}{// 200}
+    \PYG{k}{return} \PYG{l+m+mi}{0}\PYG{p}{;}
+\PYG{p}{\PYGZcb{}}
+\end{Verbatim}

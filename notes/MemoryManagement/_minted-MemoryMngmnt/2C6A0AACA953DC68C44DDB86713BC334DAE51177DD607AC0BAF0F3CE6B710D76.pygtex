@@ -1,0 +1,7 @@
+\begin{Verbatim}[commandchars=\\\{\}]
+\PYG{k}{struct} \PYG{n}{Point}\PYG{p}{\PYGZob{}}
+
+  \PYG{k+kt}{char} \PYG{n}{x}\PYG{p}{;}
+	\PYG{k+kt}{char} \PYG{n}{y}\PYG{p}{;}
+\PYG{p}{\PYGZcb{};}
+\end{Verbatim}
