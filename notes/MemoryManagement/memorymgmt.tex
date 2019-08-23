@@ -1,0 +1,37 @@
+\documentclass[11pt, a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{hyperref}
+
+
+\begin{document}
+\title{Memory Management}
+\author{Samuel Navarro}
+\date{\today}
+\maketitle
+
+\tableofcontents{}
+
+
+
+The idea that you have an operation that initializes and an operation that cleans up when you are finish. When you start the operation the constructor gets called and get you are done with the operation the destructor gets called and it will clean up all the mess. 
+
+The \texttt{\} operator} is when all the destructors gets called.
+
+
+What is RAII?
+
+Is the idea that when you come in into scope (in a function or whatever) you grab the resources you need and you initialize a local object which holds those resources that represents the abstraction that those resources are used for and in the end of the scope they get release automatically. 
+
+
+
+\section{Stack and Heap}%
+\label{sec:stack_and_heap}
+
+When you call a function it increases the stack with a stack frame that represents the function, you call another function and you go up. 
+
+When you return you go back again. If you want data that lives from one function to another you
+
+
+
+	
+\end{document}
