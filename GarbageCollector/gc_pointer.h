@@ -193,9 +193,8 @@ bool Pointer<T, size>::collect(){
 // Overload assignment of pointer to Pointer.
 template <class T, int size>
 T *Pointer<T, size>::operator=(T *t){
-
-    // TODO: Implement operator==
-    // LAB: Smart Pointer Project Lab
+  // TODO: Implement operator==
+  // LAB: Smart Pointer Project Lab
 	typename std::list<PtrDetails<T>>::iterator p;
   p = findPtrInfo(addr);
 	p->refcount--;
