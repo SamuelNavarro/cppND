@@ -5,7 +5,7 @@ int main(){
 	int id = 0;
 
   // Error: id cannot be accessed. 
-	//auto f0 = [id] { std::cout << "ID: " << id << std::endl;};
+	//auto f0 = []{ std::cout << "ID: " << id << std::endl;};
 	id++;
 	// Ok, id is captured by value.
 	auto f1 = [id]{ std::cout << "ID: " << id << std::endl;};
