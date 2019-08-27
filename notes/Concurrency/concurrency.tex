@@ -3,6 +3,7 @@
 \usepackage{minted}
 \usepackage{hyperref}
 \usepackage{graphicx}
+\usepackage{subcaption}
 \graphicspath{{./images/}}
 
 \setlength{\parindent}{0em}
@@ -28,8 +29,12 @@ But true concurrency with tasks that are running at the same time require a para
 An important measure which helps to gauge how many independent tasks can be run in parallel, this is the number of hardware threads on a system. 
 
 
+\section{Introduction and Running Threads}%
+\label{sec:introduction_and_running_threads}
 
-\section{Processes and Threads}%
+
+
+\subsection{Processes and Threads}%
 \label{sec:processes_and_threads}
 
 
@@ -123,7 +128,7 @@ Similar to processes, threads exist in different states, which are illustrated i
 \end{itemize}
 
 
-\section{Starting a Second Thread}%
+\subsection{Starting a Second Thread}%
 \label{sec:starting_a_second_thread}
 
 
@@ -140,7 +145,7 @@ To prevent this from happening and have the main program wait for the thread to 
 An example of this is in the file \texttt{main\_and\_sec\_threads.cpp}
 
 
-\subsection{Randomness of events}%
+\subsubsection{Randomness of events}%
 \label{sub:randomness_of_events}
 
 One very important trait of concurrent programs is their non-deterministic behavior. It can not be predicted which thread the scheduler will execute at which point in time. In the code on \texttt{randomness\_of\_events.cpp}, the amount of work to be performed both in the thread function and in main has been split into two separate jobs. The output in the console differs. 
@@ -154,7 +159,7 @@ Because the order of execution is determined by the scheduler, if we wanted to e
 In the file, the \texttt{.join()} can be moved to before the work in \texttt{main()}. The order of execution now always looks the same.
 
 
-\subsection{Detach}%
+\subsubsection{Detach}%
 \label{sub:detach}
 
 
@@ -170,7 +175,7 @@ Programmers should be very careful though when using the \texttt{detach()} metho
 
 
 
-\section{Starting a Thread with a Function Object}%
+\subsection{Starting a Thread with a Function Object}%
 \label{sec:starting_a_thread_with_a_function_object}
 
 We now want to pass a function object instance to the thread. This is basically an instance of a class that implements the function call operator. This can be very useful to passing data through threads. Another way to pass data and also start a thread with a very small code footprint is to use a so-called Lambda function. 
@@ -223,7 +228,7 @@ File: \texttt{PassingDataToThread.cpp}
 
 
 
-\subsection{Lambdas}%
+\subsubsection{Lambdas}%
 \label{sub:lambdas}
 
 
@@ -356,11 +361,13 @@ Intuition: The lambda which passes by value the id, gets id = 0. Also, the pass 
 
 
 
-\section{Starting a Thread with Variadic Templates and Member Functions}%
+\subsection{Starting a Thread with Variadic Templates and Member Functions}%
 \label{sec:starting_a_thread_with_variadic_templates_and_member_functions}
 
 
 \textbf{Variadic Templates}: They allow the definition of functions that take a varying number of arguments which is handy in concurrency because we can use them to pass several arguments to a thread. 
+
+\textbf{Como nota importante:} con Variadic Templates se pasan los argumentos en el mismo orden.
 
 \textbf{Member Functions} We can pass arguments to a thread by reference, but what if we wish to run a function other than the function call operator. We want to run functions of already existent objects. 
 
@@ -369,7 +376,7 @@ Intuition: The lambda which passes by value the id, gets id = 0. Also, the pass 
 We have seen that one way to pass arguments in to the thread function is to package them in a class using the function call operator. Even though this worked well, it would be very cumbersome to write a special class every time we need to pass data to a thread. We can also use a Lambda that captures the arguments and then calls the function. But there is a simpler way: The thread constructor may be called with a function and all its arguments. That is possible because the thread constructor is a \textit{variadic template} that takes multiple arguments.
 
 
-\subsection{Variadic Templates}%
+\subsubsection{Variadic Templates}%
 \label{sub:variadic_templates}
 
 
@@ -433,7 +440,7 @@ In the file \texttt{PassDataAsRef.cpp}, when passing the string variable name to
 
 Even though the code works, we are now sharing mutable data between threads - \textbf{which is a primary source for concurrency bugs.}
 
-\subsection{Starting Threads with Member Functions}%
+\subsubsection{Starting Threads with Member Functions}%
 \label{sub:starting_threads_with_member_functions}
 
 
@@ -450,11 +457,12 @@ Another thing to consider is that we have to ensure that the existence of \textt
 
 
 
-\section{Running Multiple Threads}%
+
+\subsection{Running Multiple Threads}%
 \label{sec:running_multiple_threads}
 
 
-\subsection{Fork-Join Parallelism}%
+\subsubsection{Fork-Join Parallelism}%
 \label{sub:fork_join_parallelism}
 
 The basic mechanism of this concept follows a simple three-step pattern:
@@ -462,7 +470,7 @@ The basic mechanism of this concept follows a simple three-step pattern:
 \begin{enumerate}
 	\item Split the flow of execution into a parallel thread ( \textit{"fork"})
 	\item Perform some work in both the main thread and the parallel thread.
-	\item Wait for the parallel thread to finish and unite the the split flow of execution again \textit{("join")}.
+	\item Wait for the parallel thread to finish and unite the split flow of execution again \textit{("join")}.
 \end{enumerate}
 
 
@@ -475,7 +483,6 @@ The basic mechanism of this concept follows a simple three-step pattern:
 	\caption{Fork-Join Parallelism}
 	\label{fig:fork_join_parallelism}
 \end{figure}
-
 
 In the main thread, the program flow is forked into three parallel branches. In both worker branches, some work is performed - which is why threads are often referred to as \textit{"worker threads"}. Once the work is completed, the flow of execution is united again in the main function using the \texttt{join()}  command. In this example, join acts as a barrier where all threads are united. The execution of main is in fact halted, until both worker threads have successfully completed their respective work. 
 
@@ -499,12 +506,256 @@ The console output is really messy. the components are completely intermingled. 
 
 
 
-
-In the file \textbf{properMultipleThreads.cpp}: the bug comes from accessing a shared memory location. (Remember that the lambda function in the code used \texttt{id}  by reference. 
-
+In the file \textbf{properMultipleThreads.cpp}: the bug comes from accessing a shared memory location. (Remember that the lambda function in the code used \texttt{id}  by reference.)
 
 
 
+
+
+
+
+\section{Passing Data Between Treads}%
+\label{sec:passing_data_between_treads}
+
+
+\begin{enumerate}
+	\item We are going to look at the private communication channel, between two threads that can be used only a single time but at an arbitrary moment in time of our choosing. The concept behind this is called \textbf{promises and futures} and this can be used to pass data as well as exceptions from a worker thread to the parent thread which created the worker.   
+	\item We are going to look at the differences between \textbf{threads} and \textbf{tasks.} \textbf{Tasks} are a high level concept where the system can choose whether to execute some code in parallel or synchronously. Also, they make easy to establish a promise future link in our code. This is much less code to write than standard \textbf{threads} we have usen so far. 
+	\item Look at the runtime advantage or disadvantage of parallel execution.
+	\item Passing data to a thread by value (making a copy of it) as well as using \textbf{move semantics.} Move semantics which avoids making unnecessary copies of your data, while at the same time avoiding some of the dangers of passing by reference. (which has an impact of the variables at main). 
+	\item Look at data races which are one of the primary sources of error on concurrent programming. 
+\end{enumerate}
+
+
+\subsection{Promises and Futures}%
+\label{sub:promises_and_futures}
+
+Previously, we have look in the ways we can pass data from the parent thread to the worker thread. Now we want to move data from the worker to the parent thread (in this case, the main function). The sending of the channel is \textbf{promise} and the receiving is called \textbf{future} 
+
+
+We can create a thread that takes a function and we will pass it the promise as an argument as well as the message to be modified. \textbf{Promises} cannot be copied, because the \textbf{promise-future} concept is a two-point communication channel for one-time use. Therefore, we must pass the promise to the thread function using the \texttt{std::move}. 
+
+The thread function takes the promise as an rvalue reference in accordance with move semantics \textbf{(? qué significa esto¿)}. After waiting for several seconds, the message is modified and the method \texttt{set\_value()} is called on the promise. 
+
+
+Back in the main thread, after starting the thread, the original message is printed to the console. Then, we start listening on the other end of the communication channel by calling the function \texttt{get()} on the future. This method will block until data is available - which happens as soon as \texttt{set\_value} has been called on the promise (from the thread). If the result is movable (which is the case for \texttt{ std::string}), it will be moved - otherwise it will be copied instead. After the data has been received (with a considerable delay), the modified message is printed to the console.
+
+
+It's also possible that the worker value calls \texttt{set\_vale()} on the promise before \texttt{get()} is called on the future. In this case, \texttt{get()} return immediately without any delay. After \texttt{get()} has been called once, the future is no longer usable. This makes sense as the normal mode of data exchange between \textbf{promise} and \textbf{future} works with \texttt{std::move} - and in this case, the data is no longer available in the channel after the first call to \texttt{get()}. If \texttt{get()} is called a second time, an exception is thrown.
+
+
+
+\subsubsection{Get vs Wait}%
+\label{ssub:get_vs_wait}
+
+
+There are some situations where it might be interesting to separate the waiting for the content from the actual retrieving. Futures allow us to do that using the \texttt{wait()} function. This method will block until the future is ready. Once it returns, it is guaranteed that data is available and we can use \texttt{get()} to retrieve it without delay.
+
+
+
+In addition to wait, the C++ standard also offers the method \texttt{wait\_for}, which takes a time duration as an input and also waits for a result to become available. The method \texttt{wait\_for()} will block either until the specified timeout duration has elapsed or the result becomes available - whichever comes first. The return value identifies the state of the result.
+
+
+
+\subsubsection{Passing Exceptions}%
+\label{ssub:passing_exceptions}
+
+
+The future-promise communication channel may also be used for passing exceptions. This is in the file \texttt{passingExceptions.cpp}.
+
+In the thread function, we need to implement a try-catch block which can be set to catch a particular exception or - as in our case - to catch all exceptions. Instead of setting a value, we now want to throw a \texttt{std::exception} along with a customized error message. In the catch-block, we catch this exception and throw it to the parent thread using the promise with \texttt{set\_exception}. The function \texttt{std::current\_exception} allows us to easily retrieve the exception which has been thrown.
+
+On the parent side, we now need to catch this exception. In order to do this, we can use a try-block around the call to get(). We can set the catch-block to catch all exceptions or - as in this example - we could also catch a particular one such as the standard exception. Calling the method what() on the exception allows us to retrieve the message from the exception - which is the one defined on the promise side of the communication channel.
+
+\textbf{When we run the program, we can see that the exception is being thrown in the worker thread with the main thread printing the corresponding error message to the console.}
+
+So a promise future pair can be used to pass either values or exceptions between threads.
+
+
+One of the nice thing of using futures is that you can determine the point in time when you want to retrieve data by calling the \texttt{get()}  function. That can be very useful especially when you want to ensure that the result is only available at a certain point in time. Now, there are two major drawbacks from promises and futures.
+
+\begin{enumerate}
+	\item Information can only be passed into one direction. (from worker to parent).
+	\item They are made for one-time use only. 
+\end{enumerate}
+
+
+
+\subsection{Threads vs Tasks}%
+\label{sub:threads_vs_tasks}
+
+
+If you want to quickly return data or an exception from worker to parent, a much simpler way than doing it with futures and promises is using \textbf{standard async} instead of standard thread. Calling \textbf{async} generates something called a \textbf{task} which is a high level construct where the system can decide whether to run it in parallel or  asynchronously.  
+
+
+
+In the file \texttt{threadsWithAsync.cpp} we are going to change to code so we use \texttt{st::async}  instead of \texttt{std::thread}. 
+
+The first change we are making is in the thread function: We are removing the promise from the argument list as well as the try-catch block. Also, the return type of the function is changed from void to double as the result of the computation will be channeled back to the main thread using a simple return. After these changes, the function has no knowledge of threads, nor of futures or promises - it is a simple function that takes two doubles as arguments and returns a double as a result. Also, it will throw an exception when a division by zero is attempted.
+
+In the main thread, we replace \texttt{std::thread} with \texttt{std::async}. Note that async returns a future, which we will use later in the code to retrieve the value that is returned by the function. A promise, as with \texttt{std::thread}, is no longer needed, so the code becomes much shorter. In the try-catch block, nothing has changed - we are still calling \texttt{get()} on the future in the try-block and exception-handling happens unaltered in the catch-block. Also, we do not need to call \texttt{join()} any more. With async, the thread destructor will be called automatically - which reduces the risk of a concurrency bug.
+
+When we run with \texttt{async}, as expected, the ids between the two threads (main and function) differ from each other - they are running in parallel. However, one of the major differences between \texttt{std::thread} and \texttt{std::async} is that with the latter, the system decides whether the associate function should be run asynchronously or synchronously. We can directly influence on this by adjusting the launch parameters of \texttt{std::async}. 
+
+This is reflected in the line \texttt{std::future<double> ftr = std::async(std::launch::deferred, ...)} of the file \texttt{asyncForceParallel.cpp }
+
+
+If we were to use the launch option \textit{"async"} instead of \textit{"deferred"} we would enforce an asynchronous execution whereas the option \textit{"any"} would leave it to the system to decide (which is the default).
+
+At this point, let us compare std::thread with std::async: Internally, std::async creates a promise, gets a future from it and runs a template function that takes the promise, calls our function and then either sets the value or the exception of that promise - depending on function behavior. The code used internally by std::async is more or less identical to the code we used in the previous example (\texttt{passinExceptions.cpp} in the PromisesAndFutures folder)  , except that this time it has been generated by the compiler and it is hidden from us - which means that the code we write appears much cleaner and leaner. Also, std::async makes it possible to control the amount of concurrency by passing an optional launch parameter, which enforces either synchronous or asynchronous behavior. This ability, especially when left to the system, allows us to prevent an overload of threads, which would eventually slow down the system as threads consume resources for both management and communication. If we were to use too many threads, the increased resource consumption would outweigh the advantages of parallelism and slow down the program. By leaving the decision to the system, we can ensure that the number of threads is chosen in a carefully balanced way that optimizes runtime performance by looking at the current workload of the system and the multi-core architecture of the system.
+
+
+
+\subsubsection{Task-based Concurrency}%
+\label{ssub:task_based_concurrency}
+
+Determining the optimal number of threads to use is a hard problem. It usually depends on the number of available cores whether it makes sense to execute code as a thread or in a sequential manner. The use of \texttt{std::async} (and thus tasks) take the burden of this decision away from the user and let the system decide whether to execute the code sequentially or as a thread. With tasks, the programmer decides what \textbf{CAN} be run in parallel in principle and the system then decides at runtime what \textbf{WILL} be run in parallel.
+
+Internally, this is achieved by using thread-pools which represent the number of available threads based on the cores/processors as well as by using work-stealing queues, where tasks are re-distributed among the available processors dynamically.
+
+
+We can see the idea of \textbf{work-stealing queue} in the Figure~\ref{fig:work_stealing_queues}. The first core in the example is heavily oversubscribed with several tasks that are waiting to be executed. he idea of a work-stealing queue is to have a watchdog program running in the background that regularly monitors the amount of work performed by each processor and redistributes it as needed. So, in our example, the tasks waiting would be shifted (or \textit{"stolen"}) from busy cores and added to available free cores.
+
+A work distribution nin this manner can only work, when parallelism is explicitly described in the program by the programmer. If this is not the case, work-stealing will not perform effectively.
+
+\begin{figure}[htpb!]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  % include first image
+  \includegraphics[width=.9\linewidth]{task_dist_1}  
+  \caption{Before}
+	\label{fig:before}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  % include second image
+  \includegraphics[width=.9\linewidth]{task_dist_2}  
+  \caption{After}
+	\label{fig:after}
+\end{subfigure}
+\caption{Work Stealing Queues}
+\label{fig:work_stealing_queues}
+\end{figure}
+
+
+
+
+
+\textbf{Task-based vs Thread-based} programming:
+
+\begin{table}[htpb!]
+	\centering
+	\caption{Tasks vs Threads}
+	\label{tab:tasks_vs_threads}
+	\begin{tabular}{|c|c|}
+		\hline
+	  \textbf{Task-based} & \textbf{Thread-based} \\
+		\hline
+		\hline
+	  System takes care of many detail  & Programmer is responsible \\
+		(e.g. join) &  for many details \\
+		\hline
+		Light-weight  & Heavy-weight (they are generated by the OS) \\
+		because they will be using a & It takes time for the OS \\
+		pool of already created & to allocate memory / stack /  \\
+		threads  & kernel data for the thread \\
+		\hline
+		Cheaper to destroy    & Expensive to destroy \\
+		\hline
+		Focused on throughput & Focused on latency \\
+	  \hline
+		Concurrency abstraction is high & Concurrency abstraction is low \\
+		\hline
+
+	\end{tabular}
+\end{table}
+
+
+
+Threads have more to do with latency. When you have functions that can block (e.g. file input, server connection), threads can avoid the program to be blocked, when e.g. the server is waiting for a response. Tasks on the other hand focus on throughput, where many operations are executed in parallel.
+
+
+In the file \texttt{performanceOfThreads.cpp} the main idea is to see if executing the threads in parallel makes sense. The parameters that we can change are \texttt{nLoops, nThreads, std::launch::async or deferred}. The result is that is we have a small number of loops, it doesn't make sense to run them in parallel. 
+
+
+
+\subsubsection{Outro}%
+\label{ssub:outro}
+
+So we have two basic possibilities to start threads. We can either use \texttt{std::thread}  or \texttt{std::async}. As a general rule of thumb, using async as in many cases is the easiest solution which involves less boilerplate code and basically you can achieve the same as with \texttt{std::thread}. With async you don't have to worry about calling \texttt{join()}  in the parent thread and also there's no \textbf{promise} you need to carry around and manage. 
+
+We might consider using threads when we want to have more control. Don't think to use async to launch tasks that do input-output manipulate mutexes or in other ways, interact with other threads. The idea is to use async in the simples and more common cases. 
+
+
+
+\subsection{Avoiding Data Races}%
+\label{sub:avoiding_data_races}
+
+\textbf{Data Races} occur, when two concurrent threads are accessing the same memory location while at least one of them is modifying (the other thread might be reading or modifying). In this scenario, the value at the memory location is completely undefined. Depending on the system scheduler, the second thread will be executed at an unknown point in time and thus see different data at the memory location with each execution. Depending on the type of program, the result might be anything from a crash to a security breach when data is read by a thread that was not meant to be read, such as a user password or other sensitive information. Such an error is called a data race because two threads are racing to get access to a memory location first, with the content at the memory location depending on the result of the race.
+
+
+
+
+We'll discuss some strategies for avoid them:
+
+\begin{enumerate}
+	\item Overwriting the copy constructor of a class to ensure a proper deep copy of all data structures as performed.  
+	\item Move semantics 
+	\item carefully synchronize the two threads using the \texttt{join()} or the promise-future concept that can guarantee the availability of a result.
+\end{enumerate}
+
+
+
+In the file \texttt{DataRaceExample\_atomic.cpp}, an instance of the proprietary class \texttt{Vehicle} is created and passed to a thread by value, thus making a copy of it.
+
+Note that the class Vehicle has a default constructor and an initializing constructor. In the main function, when the instances v0 and v1 are created, each constructor is called respectively. Note that v0 is passed by value to a Lambda, which serves as the thread function for std::async. Within the Lambda, the id of the Vehicle object is changed from the default (which is 0) to a new value 2. Note that the thread execution is paused for 500 milliseconds to guarantee that the change is performed well after the main thread has proceeded with its execution.
+
+In the main thread, immediately after starting up the worker thread, the id of v0 is changed to 3. Then, after waiting for the completion of the thread, the vehicle id is printed to the console.
+
+Passing data to a thread in this way is a clean and safe method as there is no danger of a data race - at least when atomic data types such as integers, doubles, chars or booleans are passed.
+
+
+Now, in the file \texttt{DataRaceExample\_pointer.cpp} we show the fact that when passing a complex data structure however, there are sometimes pointer variables hidden within, that point to a potentially shared data buffer - which might cause a data race. 
+
+
+Even though v0 is being copied by value when passed to the thread function, this time, however, even though a copy has been made, the original object \texttt{v0} is modified, when the thread function sets the new name. This happens because the member \texttt{\_name} is a pointer to a string and after copying, even though the pointer variable has been duplicated, it still points to the same location as its value (i.e. the memory location) has not changed. Note that when the delay is removed in the thread function, the console output varies between "Vehicle 2" and "Vehicle 3", depending on the system scheduler. Such an error might go unnoticed for a long time. It could show itself well after a program has been shipped to the client
+
+
+
+Classes from the standard template library usually implement a deep copy behavior by default (such as std::vector). When dealing with proprietary data types, this is not guaranteed. The only safe way to tell whether a data structure can be safely passed is by looking at its implementation: Does it contain only atomic data types or are there pointers somewhere? If this is the case, does the data structure implement the copy constructor (and the assignment operator) correctly? Also, if the data structure under scrutiny contains sub-objects, their respective implementation has to be analyzed as well to ensure that deep copies are made everywhere.
+
+
+
+\textbf{Overwriting Copy Constructor}
+
+The problem with passing a proprietary class is that the standard copy constructor makes a 1:1 copy of all data members, \textbf{including pointers to objects}. We would like a \textit{"Deep Copy"}, that is, copying the data to which the pointer refers. 
+
+
+In the file \texttt{OverwriteCopyConstructor.cpp} we make a deep copy so that the program always prints "Vehicle 3" to the console, regardless of the delay within the thread function.
+
+
+
+
+
+\subsubsection{Passing data using move semantics}%
+\label{ssub:passing_data_using_move_semantics}
+
+Even though a customized copy constructor can help us to avoid data races, it is also time (and memory) consuming. In the following, we will use move semantics to implement a more effective way of safely passing data to a thread.
+
+A move constructor enables the resources owned by an rvalue object to be moved into an lvalue without physically copying it. Rvalue references support the implementation of move semantics, which enables the programmer to write code that transfers resources (such as dynamically allocated memory) from one object to another.
+
+Unlike the default copy constructor however, the compiler does not provide a default move constructor. 
+
+
+\subsubsection{Move Semantics and Uniqueness}%
+\label{ssub:move_semantics_and_uniqueness}
+
+As with the above-mentioned copy constructor, passing by value is usually safe - provided that a deep copy is made of all the data structures within the object that is to be passed. With move semantics , we can additionally use the notion of uniqueness to prevent data races by default. In the file \texttt{moveSemanticsAndUniqueness.cpp}  example, a \texttt{unique\_pointer} instead of a raw pointer is used for the string member in the Vehicle class.
+
+
+\textbf{In this file, the move constructor transfers the unique pointer to the worker by using \texttt{std::move}  and thus invalidates the pointer in the main thread.} When calling \texttt{v0.getName()}, an exception is thrown, making it clear to the programmer that accessing the data at this point is not permissible - which is the whole point of using a unique pointer here as a data race will now be effectively prevented. 
+
+The point of this example has been to illustrate that move semantics on its own is not enough to avoid data races. The key to thread safety is to use move semantics in conjunction with uniqueness. It's the responsibility of the programmer to ensure that pointers to objects that are moved between threads are unique.
 
 
 
