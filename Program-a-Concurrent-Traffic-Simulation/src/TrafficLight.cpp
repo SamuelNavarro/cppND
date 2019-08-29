@@ -22,11 +22,9 @@ template <typename T>
 void MessageQueue<T>::send(T&& msg)
 {
 	std::unique_lock<std::mutex> lck(_mtx);
-	/*
-	 *lck.unlock();
-	 *std::cout << " Message " << msg << " has been sent to the queue" << std::endl;
-	 *lck.lock();
-	 */
+	lck.unlock();
+	std::cout << " Message " << msg << " has been sent to the queue" << std::endl;
+	lck.lock();
   _queue.push_back(std::move(msg));
 	_cond.notify_one();
 }
