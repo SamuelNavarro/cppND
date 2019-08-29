@@ -42,8 +42,8 @@ int main()
 
     v0.setID(3);
 
-
     ftr.wait();
+
     std::cout << "Vehicle #" << v0.getID() << std::endl;
 
     return 0;

@@ -21,7 +21,6 @@ int main(){
 
 	//start thread and pass promise as argument.
 	std::thread t(modifyMsg, std::move(prms), msgToThread);
-
 	std::cout << "Original msg from main(): " << msgToThread << std::endl;
 
 
@@ -31,7 +30,7 @@ int main(){
 
 
 
-	// SI no hago el get() se corre todo pero no obtengo el mensaje.
+	// Si no hago el get() se corre todo pero no obtengo el mensaje.
 	// Sólo imprime: modified msg from thread():
 	//std::cout << "Modified msg from thread(): " <<  std::endl;
 
