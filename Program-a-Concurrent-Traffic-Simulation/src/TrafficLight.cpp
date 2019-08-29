@@ -34,7 +34,7 @@ void TrafficLight::waitForGreen()
 {
 		while(true){
 		  auto light = msgs->receive();	
-			if(light == green){
+			if(light == TrafficLightPhase::green){
 				return;
 			}
 		}
