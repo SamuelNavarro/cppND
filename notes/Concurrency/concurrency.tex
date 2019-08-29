@@ -712,6 +712,12 @@ Note that the class Vehicle has a default constructor and an initializing constr
 
 In the main thread, immediately after starting up the worker thread, the id of v0 is changed to 3. Then, after waiting for the completion of the thread, the vehicle id is printed to the console.
 
+
+\textit{Note: We can't get the value of v0 to be equal to 2 because it's passed by value. If it were passed by reference, we can print out the value in the main thread. This is in file DataRaceExample\_atomic.cpp}
+
+
+
+
 Passing data to a thread in this way is a clean and safe method as there is no danger of a data race - at least when atomic data types such as integers, doubles, chars or booleans are passed.
 
 
@@ -719,6 +725,8 @@ Now, in the file \texttt{DataRaceExample\_pointer.cpp} we show the fact that whe
 
 
 Even though v0 is being copied by value when passed to the thread function, this time, however, even though a copy has been made, the original object \texttt{v0} is modified, when the thread function sets the new name. This happens because the member \texttt{\_name} is a pointer to a string and after copying, even though the pointer variable has been duplicated, it still points to the same location as its value (i.e. the memory location) has not changed. Note that when the delay is removed in the thread function, the console output varies between "Vehicle 2" and "Vehicle 3", depending on the system scheduler. Such an error might go unnoticed for a long time. It could show itself well after a program has been shipped to the client
+
+
 
 
 
@@ -733,7 +741,7 @@ The problem with passing a proprietary class is that the standard copy construct
 
 In the file \texttt{OverwriteCopyConstructor.cpp} we make a deep copy so that the program always prints "Vehicle 3" to the console, regardless of the delay within the thread function.
 
-
+\textit{Note: In fact, in the DataRaceExample\_pointer.cpp example my program always output the value Vehicle 2 to the console.}
 
 
 
@@ -756,6 +764,339 @@ As with the above-mentioned copy constructor, passing by value is usually safe -
 \textbf{In this file, the move constructor transfers the unique pointer to the worker by using \texttt{std::move}  and thus invalidates the pointer in the main thread.} When calling \texttt{v0.getName()}, an exception is thrown, making it clear to the programmer that accessing the data at this point is not permissible - which is the whole point of using a unique pointer here as a data race will now be effectively prevented. 
 
 The point of this example has been to illustrate that move semantics on its own is not enough to avoid data races. The key to thread safety is to use move semantics in conjunction with uniqueness. It's the responsibility of the programmer to ensure that pointers to objects that are moved between threads are unique.
+
+
+
+\subsubsection{Outro}%
+\label{ssub:outro}
+
+A useful tip is to delay threads using standard sleep can help expose data races. And, one of the key things to thread safety is using move semantics in conjunction with uniqueness. It's the responsibility of the programmer to ensure that the pointers to objects that are moved between threads are always unique. 
+
+Also, we can overwrite the copy constructor to enable a deep copy of a proprietary data structure or class. 
+
+
+
+\section{Mutexes and Locks}%
+\label{sec:mutexes_and_locks}
+
+
+\subsection{Using a Mutex to Protect Sharing Data}%
+\label{sub:using_a_mutex_to_protect_sharing_data}
+
+The promise-future pair is for one time use only and only works in a single direction. With \texttt{mutex} we can safely \textbf{lock} a resource, modify it, and then unlock it again once we're done with it. 
+
+
+\subsubsection{Using Mutex to Protect Shared Data}%
+\label{ssub:using_mutex_to_protect_shared_data}
+
+
+\textbf{The mutex Entity}
+
+Until now, the methods we have used to pass data between threads were short-term and involved passing an argument (the promise) from a parent thread to a worker thread and then passing a result back to the parent thread (via the future) once it has become available. The promise-future construct is a non-permanent communication channel for one-time usage.
+
+In C++, the concept of taking turns can be constructed by an entity called a \textbf{"mutex"} - which stand for Mutual Exclusion.
+
+
+Recall that a data race requires simultaneous access from two threads. If we can guarantee that only a single thread at a time can access a particular memory location, data races would not occur. In order for this to work, we would need to establish a communication protocol. It is important to note that a \textbf{mutex} is not the solution to the data race problem per se but merely an enabler for a thread-safe communication protocol that has to be implemented and adhered to by the programmer.
+
+
+
+\begin{figure}[htpb!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{mutex}
+	\caption{Mutex}
+	\label{fig:mutex}
+\end{figure}
+
+
+
+
+Let us take a look at how this protocol works: Assuming we have a piece of memory (e.g. a shared variable) that we want to protect from simultaneous access, we can assign a mutex to be the guardian of this particular memory. It is important to understand that a mutex is bound to the memory it protects. A thread 1 who wants to access the protected memory must "lock" the mutex first. After thread 1 is "under the lock", a thread 2 is blocked from access to the shared variable, it can not acquire the lock on the mutex and is temporarily suspended by the system.
+
+Once the reading or writing operation of thread 1 is complete, it must "unlock" the mutex so that thread 2 can access the memory location. Often, the code which is executed "under the lock" is referred to as a "critical section". It is important to note that also read-only access to the shared memory has to lock the mutex to prevent a data race - which would happen when another thread, who might be under the lock at that time, were to modify the data.
+
+When several threads were to try to acquire and lock the mutex, only one of them would be successful. All other threads would automatically be put on hold - just as cars waiting at an intersection for a green light. Once the thread who has succeeded in acquiring the lock had finished its job and unlocked the mutex, a queued thread waiting for access would be woken up and allowed to lock the mutex to proceed with his read / write operation. If all threads were to follow this protocol, a data race would effectively be avoided.
+
+A complete example could be find in forcedDataRace.cpp. In the file, we commented out the \texttt{push\_back()} function. The reason is that we are trying to force a data race and if we keep \texttt{push\_back()} it'll cause the program to crash. Also, the tmp variable is used to see the data race. 
+
+
+It seems that not all the vehicles could be added to the queue. But why is that? Note that in the thread function "pushBack" there is a call to sleep\_for, which pauses the thread execution for a short time. This is the position where the data race occurs: First, the current value of \_tmpVehicles is stored in a temporary variable oldNum. While the thread is paused, there might (and will) be changes to \_tmpVehicles performed by other threads. When the execution resumes, the former value of \_tmpVehicles is written back, thus invalidating the contribution of all the threads who had write access in the mean time. Interestingly, when sleep\_for is commented out, the output of the program is the same as with std::launch::deferred - at least that will be the case for most of the time when we run the program. But once in a while, there might be a scheduling constellation which causes the bug to expose itself. 
+
+\textit{As an advice, introducing deliberate time delays in the testing / debugging phase of development can help expose many concurrency bugs.}
+
+
+In its simples form, using a mutex consists of four straightforward steps:
+\begin{enumerate}
+\item include the $< mutex >$ header.
+	\item Create and std::mutex
+	\item Lock the mutex using lock() before read/write is called
+	\item Unlock the mutex after the read/write operation is finished using unlock()
+\end{enumerate}
+
+
+
+In the file \texttt{mutex\_1.cpp} In order to protect the access to \_vehicles from being manipulated by several threads at once, a mutex has been added to the class as a private data member. In the pushBack function, the mutex is locked before a new element is added to the vector and unlocked after the operation is complete.
+
+Note that the mutex is also locked in the function printSize just before printing the size of the vector. The reason for this lock is two-fold: First, we want to prevent a data race that would occur when a read-access to the vector and a simultaneous write access (even when under the lock) would occur. And second, we want to exclusively reserve the standard output to the console for printing the vector size without other threads printing to it at the same time.
+
+
+Now, the data race will be avoided and the vector of vehicles will be 1000 always.
+
+
+\subsubsection{Using Timed Mutex}%
+\label{ssub:using_timed_mutex}
+
+There different \texttt{mutex} types:
+
+\begin{itemize}
+	\item \texttt{mutex} provides the core functions \texttt{lock()} and \texttt{unlock()} and the non-blocking \texttt{try\_lock()} method that returns if the mutex is not available.
+	\item \texttt{recursive\_mutex}: allows multiple acquisitions of the mutex from the same thread.
+	\item \texttt{timed\_mutex} similar to mutex, but it comes with two more methods, \texttt{try\_lock\_for()} and \texttt{try\_lock\_until()} that try to acquire the mutex for a period of time or until a moment in time is reached. 
+	\item \texttt{recursive\_timed\_mutex} combination of the previous two.
+\end{itemize}
+
+\begin{figure}[htpb!]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  % include first image
+  \includegraphics[width=.9\linewidth]{timed_mutex}  
+  \caption{Timed Mutex i less than 3}
+	\label{fig:timed_mutex}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  % include second image
+  \includegraphics[width=.9\linewidth]{timed_mutex}  
+  \caption{Timed Mutex i = 1}
+	\label{fig:timed_mutex_1}
+\end{subfigure}
+\caption{Timed Mutex}
+\label{fig:timed_mutex}
+\end{figure}
+
+
+
+
+
+
+
+\subsubsection{DeadLock}%
+\label{ssub:deadlock}
+
+Using mutexes can significantly reduce the risk of data races as seen in the example above. But imagine what would happen if an exception was thrown while executing code in the critical section, i.e. between lock and unlock. In such a case, the mutex would remain locked indefinitely and no other thread could unlock it - the program would most likely freeze.
+
+In the file \texttt{deadlock\_1.cpp} we can see an output like Figure~\ref{fig:deadlock}.
+
+
+\begin{figure}[htpb!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{deadlock}
+	\caption{Deadlock}
+	\label{fig:deadlock}
+\end{figure}
+
+
+So, what if we try to avoid this output by using mutexes? With the code added to the same file (codeadlock\_1.cpp), we get one type of deadlock, which causes a program to freeze because one thread does not release the lock on the mutex while all other threads are waiting for access indefinitely. 
+
+
+
+
+A second type of \textbf{deadlock} is a state in which two or more threads are blocked because each thread waits for the resource of the other thread to be released before realising its resource. This is reflected in the file \texttt{deadlock\_2.cpp} 
+
+
+\begin{figure}[htpb!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{deadlock_diagram}
+	\caption{Deadlock Diagram}
+	\label{fig:deadlock_diagram}
+\end{figure}
+
+In Figure~\ref{fig:deadlock_diagram} we see the logic of the deadlock.
+
+
+
+\subsubsection{Using Locks to Avoid DeadLocks}%
+\label{ssub:using_locks_to_avoid_deadlocks}
+
+
+The basic idea is to package calls to the mutex in an object called a \texttt{lock\_guard} and this object lock's the mutex at the time of its creation and unlocks it automatically when it's destroyed. Now, imagine that in the middle of accessing a shared data location, there's an exception and the program flow is directed away from the current thread. As soon as the \texttt{lock\_guard} object is invalidated by going out of scope, the lock on the shared data is released and others can access it again. 
+
+This concept can be extended further by a similar form called \texttt{unique\_lock}.
+
+
+The idea of \textit{"working under the lock"} is to block access by other threads to the same resource. In practice, however, \textbf{direct calld to lock() shoudl be avoided at all cost!}. This can make us incur in the \textbf{deadlock problem} where while working under the lock, a thread would throw an expcetion and exit the critical section without calling the unlock function on the mutex. 
+
+We can avoid this problem by creating a \texttt{std::lock\_guard} object, which keeps an associated mutex locked during the entire object life time. The lock is acquired on construction and released automatically on destruction. Also, \texttt{std::lock\_guard} guarantees exception safety because any critical section is automatically unlocked when an exception is thrown. 
+
+
+This is in the file \texttt{lock\_guard.cpp}. 
+
+
+
+\subsubsection{Unique Lock}%
+\label{ssub:unique_lock}
+
+The problem with the example in \texttt{lock\_guard.cpp} is that we can only lock the mutex once and the only way to control lock and unlock is by invalidating the scope of the \texttt{std::lock\_guard} object. 
+
+
+A more flexible alternative to std::lock\_guard is uniquelock\_, that also provides support for more advanced mechanisms, such as deferred locking, time locking, recursive locking, transfer of lock ownership and use of condition variables (which we will discuss later). It behaves similar to lock\_guard but provides much more flexibility, especially with regard to the timing behavior of the locking mechanism.
+
+
+
+
+In this version of the code, std::lock\_guard has been replaced with std::unique\_lock. As before, the lock object lck will unlock the mutex in its destructor, i.e. when the function divideByNumber returns and lck gets out of scope. In addition to this automatic unlocking, std::unique\_lock offers the additional flexibility to engage and disengage the lock \textbf{as needed by manually} calling the methods lock() and unlock(). This ability can greatly improve the performance of a concurrent program, especially when many threads are waiting for access to a locked resource. In the example, the lock is released before some non-critical work is performed (simulated by sleep\_for) and re-engaged before some other work is performed in the critical section and thus under the lock again at the end of the function. This is particularly useful for optimizing performance and responsiveness when a significant amount of time passes between two accesses to a critical resource.
+
+
+
+The main advantages of unique\_lock over lock\_guard is that with unique\_lock you can:
+
+\begin{itemize}
+	\item construct an instance without an associated mutex using the default constructor
+	\item construct an instance with an associated mutex while leaving the mutex unlocked at first using the deferred-locking constructor
+	\item construct an instance that tries to lock a mutex, but leaves it unlocked if the lock failed using the try-lock constructor
+	\item construct an instance that tries to acquire a lock for either a specified time period or until a specified point in time
+\end{itemize}
+
+
+
+
+Occasionally you can nest your locks, for example by calling a subsystem that protects its internal data with a mutex while holding a lock on another mutex, \textbf{but it is generally better to avoid locks on multiple mutexes at the same time, if possible.}
+Sometimes, however, it is necessary to hold a lock on more than one mutex because you need to perform an operation on two different data elements, each protected by its own mutex.
+
+We have seen that using several mutexes at once can lead to a deadlock, if the order of locking them is not carefully managed. To avoid this problem, \textbf{the system must be told that both mutexes should be locked at the same time}, so that one of the threads takes over both locks and blocking is avoided. That's what the std::lock() function is for - \textbf{you provide a set of lock\_guard or unique\_lock objects and the system ensures that they are all locked when the function returns.}  
+
+An example of a deadlock with lock\_guard is in the file \texttt{lockguard\_deadlock.cpp}  and a way to avoid this is in \texttt{lockguard\_deadlockFree.cpp} we just add std::lock packing togheter 2 mutexes and add std::adopt\_lock to the std::lock\_guard.
+
+
+
+
+\textit{As a rule of thumb, programmers should try to avoid using several mutexes at once. Practice shows that this can be achieved in the majority of cases. For the remaining cases though, using std::lock is a safe way to avoid a deadlock situation.}
+
+
+\subsubsection{Outro}%
+\label{ssub:outro}
+
+Remember that mutexes should never be used directly even though this technically works. 
+
+We can solve the dilemma of two locks depending of the unlocking of the other one with the standard lock operation (packing them together). 
+
+
+\textbf{The 3 Lesson project}
+
+The instance of class waiting vehicles is a \textbf{shared resource}: It's shared by all vehicles threads approaching intersection. And when one thread is \textbf{writing} and another thread is \textbf{either reading or writing} that's a \textbf{data race} regardless we observe an error or not at the time. 
+
+
+
+
+
+
+\section{Condition Variables and Messages}%
+\label{sec:condition_variables_and_messages}
+
+
+The goal here is to develop a method for a controlled and finely range data exchange between several threads. In this lesson, we will build a concurrent message queue.
+
+But, we first need to understand the \textbf{monitor object pattern and condition variables.}
+
+
+\subsection{The Monitor Object Pattern}%
+\label{sub:the_monitor_object_pattern}
+
+This is a design pattern which is used to synchronize concurrent method execution to ensure that only one method at a time runs within an object. This is specially useful in cases where an application contains objects whose methods are invoked concurrently by multiple client threads and where these methods modify the state of their objects. 
+
+
+What we would like to do now is to develop a mechanism that would allow us to react as soon as a new item was available. 
+
+
+
+\textbf{Building the Monitor Object Pattern}
+
+One important step towards such a construct is to implement a monitor object, which is a design pattern that synchronizes concurrent method execution to ensure that only one method at a time runs within an object. It also allows an object's methods to cooperatively schedule their execution sequences. The problem solved by this pattern is based on the observation that many applications contain objects whose methods are invoked concurrently by multiple client threads. These methods often modify the state of their objects, for example by adding data to an internal vector. For such concurrent programs to execute correctly, it is necessary to synchronize and schedule access to the objects very carefully. The idea of a monitor object is to synchronize the access to an object's methods so that only one method can execute at any one time.
+
+
+In the file \texttt{printEntireVector.cpp}  we see that once the Vehicles are added to the WaitingVehicles vector, all are going to be printed out. 
+
+While the pushBack method is used by the threads to add data to the monitor incrementally, the main thread uses printSize at the end to display all the results at once. Our goal is to change the code in a way that the main thread gets notified every time new data becomes available. But how can the main thread know whether new data has become available? The solution is to write a new method that regularly checks for the arrival of new data.
+
+
+
+In the file \texttt{inifinitePollingLoop.cpp} we add a method \texttt{dataIsAvailable()}. This method return true if data is available in the vector and false otherwise. Once the main thread has found out that new data is in the vector, it can call the method \texttt{popBack()} to retrieve data from the monitor object. \textbf{Note that instead of copying the data, it is moved from the vector to the main method.}
+
+
+\subsection{Building a Concurrent Message Queue}%
+\label{sub:building_a_concurrent_message_queue}
+
+The infinite polling loop puts a heavy load in the processor due to the constant iterations in very short intervals. One thing we could use is \textbf{futures} to fetch the data once we receive a signal that new data is coming. The problem with this is a that futures are meant to be used only once and for the purpose of our messaging queue we need a signaling mechanism that can be reused as often as we need it. This is where we use the \textbf{condition variable}
+
+
+\subsubsection{Condition Variables}%
+\label{ssub:condition_variables}
+
+A std::condition\_variable has a method wait(), which blocks, when it is called by a thread. The condition variable is kept blocked until it is released by another thread. The release works via the method notify\_one() or the notify\_all method. The key difference between the two methods is that notify\_one will only wake up a single waiting thread while notify\_all will wake up all the waiting threads at once.
+
+A condition variable is a low-level building block for more advanced communication protocols. It neither has a memory of its own nor does it remember notifications. Imagine that one thread calls wait() before another thread calls notify(), the condition variable works as expected and the first thread will wake up. Imagine the case however where the call order is reversed such that notify() is called before wait(), the notification will be lost and the thread will block indefinitely. So in more sophisticated communication protocols a condition variable should always be used in conjunction with another shared state that can be checked independently. Notifying a condition variable in this case would then only mean to proceed and check this other shared state.
+
+
+
+
+\begin{figure}[htpb!]
+\begin{subfigure}{.5\textwidth}
+  \centering
+  % include first image
+  \includegraphics[width=.9\linewidth]{scenario_1}  
+  \caption{Scenario 1}
+	\label{fig:scenario_1}
+\end{subfigure}
+\begin{subfigure}{.5\textwidth}
+  \centering
+  % include second image
+  \includegraphics[width=.9\linewidth]{scenario_2}  
+  \caption{Scenario 2}
+	\label{fig:scenario_2}
+\end{subfigure}
+\caption{Communication Protocol}
+\label{fig:communication_protocol}
+\end{figure}
+
+
+
+
+In the Scenario 1, the consumer thread checks dataIsAvailable() and since it is false, the consumer thread blocks and waits on the condition variable. Later in time, the producer thread sets dataIsAvailable to true and calls notify\_one on the condition variable. At this point, the consumer wakes up and proceeds with its work.
+
+In the Sceneario 2, here, the producer thread comes first, sets dataIsAvailable() to true and calls notify\_one. Then, the consumer thread comes and checks dataIsAvailable() and finds it to be true - so it does not call wait and proceeds directly with its work. Even though the notification is lost, it does not cause a problem in this construct - the message has been passed successfully through dataIsAvailable and the wait-lock has been avoided.
+
+
+In a non-concurrent environment, these two scenarios would most probably be sufficient to describe possible combinations. But, in a concurrent programming, because there are four atomic operators, two for each thread, when executed often enough, all possible interleaving will show themselves. 
+
+
+
+In Figure~\ref{fig:lock_program} The consumer thread reads dataIsAvailable(), which is false in the example. Then, the producer sets dataIsAvailable() to true and calls notify. Due to this unlucky interleaving of actions, the consumer thread calls wait because it has seen dataIsAvailable() as false. The problem here is that after calling wait, the consumer thread will never wake up again. Also, as you may have noticed, the shared variable dataReady is not protected by a mutex here - which makes it even more likely that something will go wrong.
+
+
+\begin{figure}[htpb!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{lock_program}
+	\caption{Lock Program}
+	\label{fig:lock_program}
+\end{figure}
+
+
+
+One quick idea for a solution which might come to mind would be to perform the two operations dataIsAvailable and wait under a locked mutex. While this would effectively prevent the interleaving of tasks between different threads, it would also prevent another thread from ever modifying dataIsAvailable again.
+
+
+
+This is shown in the Figure~\ref{fig:locked_mutex}. In there, we are closing the gap between reading the state and entering the wait. We are reading the state under the lock (red bar) and we call wait still under the lock. Then, we let wait release the lock and enter the wait state in one atomic step. This is only possible because the \textbf{wait()} method is able to take a lock as an argument. The lock that we can pass to wait however is not the lock\_guard we have been using so often until now but instead it has to be a lock that can be temporarily unlocked inside wait - a suitable lock for this purpose would be the unique\_lock type which we have discussed in the previous section.
+
+
+\begin{figure}[htpb!]
+	\centering
+	\includegraphics[width=0.8\linewidth]{locked_mutex}
+	\caption{Locked Mutex}
+	\label{fig:locked_mutex}
+\end{figure}
+
+
 
 
 
